@@ -1,0 +1,10 @@
+{
+    "connection" : {
+        "drivers" : [
+            "mysql"
+        ]
+    },
+    "paths" : {
+        "macro": "\\QueryBuilder\\Macro"
+    }
+}
