@@ -4,32 +4,41 @@ namespace QueryBuilder\Macro\Statements;
 
 trait WhereStatement
 {
-    public function where(string $column, string $operator, mixed $value): self
+    public function where(string|callable $column, ?string $operator = null, mixed $value = null): self
     {
-        $type = empty($this->statement[':where']) ? null : "and";
-        $this->statement[':where'][] = [
-            "statement" => "{$type} ( :column :operator :value )",
+        if (is_callable($column)) {
+            return $this->withExpression(":where", $column);
+        }
+
+        $this->addStatementOption(':where', [
+            "statement" => ":whereType ( :column :operator :value )",
             ":operator" => $operator,
             ":column" => $column,
-            ":value" => $value
-        ];
-        
-        $this->addParam(":{$column}", $value);
+            ":value" => $value,
+            ":whereType" => $this->typeWhereIfNotExists("and")
+        ]);
         return $this;
     }
 
     public function orWhere(string $column, string $operator, mixed $value): self
     {
-        $type = empty($this->statement[':where']) ? null : "or";
-        $this->statement[':where'][] = [
-            "statement" => "{$type} ( :column :operator :value )",
+        if (is_callable($column)) {
+            return $this->withExpression(":where", $column);
+        }
+
+        $this->addStatementOption(':where', [
+            "statement" => ":whereType ( :column :operator :value )",
             ":operator" => $operator,
             ":column" => $column,
-            ":value" => $value
-        ];
-
-        $this->addParam(":{$column}", $value);
+            ":value" => $value,
+            ":whereType" => $this->typeWhereIfNotExists("or")
+        ]);
         return $this;
+    }
+
+    private function typeWhereIfNotExists(string $type): ?string
+    {
+        return $this->exists(":where") === false ? null : $type;
     }
 
 }

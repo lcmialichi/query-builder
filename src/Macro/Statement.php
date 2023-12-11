@@ -4,8 +4,8 @@ namespace QueryBuilder\Macro;
 
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Macro\Builder\Builder;
+use QueryBuilder\Connection\QueryResult;
 use QueryBuilder\Macro\Builder\BaseStructure;
-use QueryBuilder\Macro\Statements\WhereStatement;
 
 abstract class Statement
 {
@@ -17,26 +17,30 @@ abstract class Statement
     {
     }
 
+    /** @return array<mixed> */
     public function getStatementOptions(): array
     {
         return $this->statement;
     }
 
+    /** @return array<mixed> */
     public function getParams(): array
     {
         return $this->params;
     }
 
-    public function addParams(array $params): void
+    public function addParams(array $params): self
     {
         foreach ($params as $param => $value) {
             $this->addParam($param, $value);
         }
+        return $this;
     }
 
-    public function addParam(string $param, mixed $value): void
+    public function addParam(string $param, mixed $value): self
     {
-        $this->params[ltrim(":", $param)] = $value;
+        $this->params[$param] = $value;
+        return $this;
     }
 
     protected function addStatementOption(string $option, mixed $value): void
@@ -65,10 +69,35 @@ abstract class Statement
         return $builder->build()->getQuery();
     }
 
-
-    public function execute()
+    public function expression(): Expression
     {
-        $this->queryBuilder->getConnection()->execute(dd($this->buildQuery()));
+        return new Expression;
+    }
+
+    /** @return array<mixed> */
+    protected function withExpression(string $context, callable $callable): self
+    {
+        $expr = $callable($this->expression());
+        $this->addStatementOption($context, [
+            "statement" => sprintf(" ( %s )", $expr->getExpression()),
+            ...$expr->getParameters()
+        ]);
+
+        return $this;
+    }
+
+    protected function exists(string $context): bool
+    {
+        return !empty($this->statement[$context]);
+    }
+
+    public function execute(): QueryResult
+    {
+        return (new QueryResult(
+            $this->queryBuilder->getConnection(),
+            $this->buildQuery(),
+            $this->getParams()
+        ))->execute();
     }
 
 

@@ -15,12 +15,7 @@ class Connection implements \QueryBuilder\Contracts\Connection
     ) {
         $this->createConnection();
     }
-
-    public function execute(string $statement): void
-    {
-        $this->connection()->query($statement)->execute();
-    }
-
+    
     private function createConnection(): void
     {
         if ($this->driverExists($this->driver)) {
@@ -35,7 +30,7 @@ class Connection implements \QueryBuilder\Contracts\Connection
         throw new \Exception("Driver `{$this->driver}` does not exist");
     }
 
-    private function connection(): \PDO
+    public function connection(): \PDO
     {
         return $this->connection;
     }
@@ -44,10 +39,4 @@ class Connection implements \QueryBuilder\Contracts\Connection
     {
         return in_array($driver, connectionDrivers());
     }
-
-    public function fetch(){
-        
-    }
-
-
 }

@@ -6,8 +6,10 @@ use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Contracts\Connection;
 
 /**
- * @method select(?array $columns = null) @return \QueryBuilder\Contracts\Macro
- * @method insert(array $values) @return \QueryBuilder\Contracts\Macro
+ * @method \QueryBuilder\Macro\Statement select(?array $columns = null)
+ * @method \QueryBuilder\Macro\Statement insert(array $values)
+ * @method \QueryBuilder\Macro\Statement update(string $table)
+ * @method \QueryBuilder\Macro\Statement delete()
  */
 class QueryBuilder
 {
@@ -46,4 +48,5 @@ class QueryBuilder
     {
         return $this->connection;
     }
+
 }
