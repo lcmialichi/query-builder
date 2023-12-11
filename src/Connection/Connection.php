@@ -13,10 +13,9 @@ class Connection implements \QueryBuilder\Contracts\Connection
         private ?string $database,
         private ?string $driver = "mysql"
     ) {
-        $this->createConnection();
     }
-    
-    private function createConnection(): void
+
+    public function createConnection(): void
     {
         if ($this->driverExists($this->driver)) {
             self::$connection = new \PDO(
@@ -30,8 +29,26 @@ class Connection implements \QueryBuilder\Contracts\Connection
         throw new \Exception("Driver `{$this->driver}` does not exist");
     }
 
+    public function disableAutoCommit(): void
+    {
+        $this->connection()->beginTransaction();
+    }
+
+    public function commit(): void
+    {
+        $this->connection()->commit();
+    }
+
+    public function hasConnection(): bool
+    {
+        return isset(self::$connection);
+    }
+
     public static function connection(): \PDO
     {
+        if (!isset(self::$connection)) {
+            throw new \Exception("Connection not created");
+        }
         return self::$connection;
     }
 

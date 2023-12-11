@@ -17,7 +17,7 @@ class QueryResult
     ) {
     }
 
-    private function connection(): \PDO
+    private function connection(): \PDO 
     {
         return $this->connection->connection();
     }
@@ -27,9 +27,18 @@ class QueryResult
         return $this->query;
     }
 
+    public function params(): array
+    {
+        return $this->params;
+    }
+
     public function execute(): QueryResult
     {
         $this->statement = $this->connection()->prepare($this->query);
+        if(!$this->statement){
+            throw new \Exception("Error to prepare statement");
+        }
+
         $this->bind();
         $this->statement->execute();
         return $this;
@@ -46,6 +55,16 @@ class QueryResult
     public function fetch(): array
     {
         return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function rollBack(): bool
+    {
+        return $this->connection()->rollBack();
+    }
+
+    public function commit(): void
+    {
+        $this->connection()->commit();
     }
 
     public function fetchAssociative(): Iterator
