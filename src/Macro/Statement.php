@@ -75,11 +75,12 @@ abstract class Statement
     }
 
     /** @return array<mixed> */
-    protected function withExpression(string $context, callable $callable): self
+    protected function withExpression(string $context, callable $callable, string $andOr = "and"): self
     {
         $expr = $callable($this->expression());
         $this->addStatementOption($context, [
-            "statement" => sprintf(" ( %s )", $expr->getExpression()),
+            "statement" => sprintf(":andOr ( %s )", $expr->getExpression()),
+            ":andOr" => $this->exists($context) ? $andOr : null,
             ...$expr->getParameters()
         ]);
 
@@ -89,6 +90,11 @@ abstract class Statement
     protected function exists(string $context): bool
     {
         return !empty($this->statement[$context]);
+    }
+
+    public function toSql(): string
+    {
+        return $this->buildQuery();
     }
 
     public function execute(): QueryResult

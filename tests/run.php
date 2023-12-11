@@ -19,9 +19,9 @@ $success = $qb->select([
     ])
     ->from("visit")
     ->where("id", ">", ":ID")
-    ->where("id", "<", ":ID")
+    ->where(fn($exp) => $exp->between("accomplished_km", 1, 2000))
     ->addParam(":ID",  1)
-    ->execute()->toSql();
+    ->toSql();
 
     dd($success);
 // dd($success->fetch());
