@@ -14,7 +14,6 @@ $qb = new QueryBuilder(
     )
 );
 
-
 $success = $qb->select([
     "accomplished_km"
     ])

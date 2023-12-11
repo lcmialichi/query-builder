@@ -4,7 +4,7 @@ namespace QueryBuilder\Connection;
 
 class Connection implements \QueryBuilder\Contracts\Connection
 {
-    protected \PDO $connection;
+    protected static \PDO $connection;
 
     public function __construct(
         private ?string $host,
@@ -19,7 +19,7 @@ class Connection implements \QueryBuilder\Contracts\Connection
     private function createConnection(): void
     {
         if ($this->driverExists($this->driver)) {
-            $this->connection = new \PDO(
+            self::$connection = new \PDO(
                 "{$this->driver}:host={$this->host};dbname={$this->database}",
                 $this->user,
                 $this->password
@@ -30,9 +30,9 @@ class Connection implements \QueryBuilder\Contracts\Connection
         throw new \Exception("Driver `{$this->driver}` does not exist");
     }
 
-    public function connection(): \PDO
+    public static function connection(): \PDO
     {
-        return $this->connection;
+        return self::$connection;
     }
 
     public function driverExists(string $driver): bool
