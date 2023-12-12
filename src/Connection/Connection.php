@@ -2,6 +2,8 @@
 
 namespace QueryBuilder\Connection;
 
+use QueryBuilder\Exception\ConnectionException;
+
 class Connection implements \QueryBuilder\Contracts\Connection
 {
     protected static \PDO $connection;
@@ -15,18 +17,18 @@ class Connection implements \QueryBuilder\Contracts\Connection
     ) {
     }
 
+    /** @throws ConnectionException */
     public function createConnection(): void
     {
-        if ($this->driverExists($this->driver)) {
-            self::$connection = new \PDO(
-                "{$this->driver}:host={$this->host};dbname={$this->database}",
-                $this->user,
-                $this->password
-            );
-            return;
+        if (!$this->driverExists($this->driver)) {
+            throw ConnectionException::driverNotFound($this->driver);
         }
 
-        throw new \Exception("Driver `{$this->driver}` does not exist");
+        $this->setConnection(new \PDO(
+            $this->getDsn(),
+            $this->getUser(),
+            $this->getPassword()
+        ));
     }
 
     public function disableAutoCommit(): void
@@ -39,7 +41,7 @@ class Connection implements \QueryBuilder\Contracts\Connection
         $this->connection()->commit();
     }
 
-    public function hasConnection(): bool
+    public static function hasConnection(): bool
     {
         return isset(self::$connection);
     }
@@ -47,7 +49,7 @@ class Connection implements \QueryBuilder\Contracts\Connection
     public static function connection(): \PDO
     {
         if (!isset(self::$connection)) {
-            throw new \Exception("Connection not created");
+            throw ConnectionException::connectionNotEstablished();
         }
         return self::$connection;
     }
@@ -55,5 +57,25 @@ class Connection implements \QueryBuilder\Contracts\Connection
     public function driverExists(string $driver): bool
     {
         return in_array($driver, connectionDrivers());
+    }
+
+    private function setConnection(\PDO $connection): void
+    {
+        self::$connection = $connection;
+    }
+
+    private function getDsn(): string
+    {
+        return "{$this->driver}:host={$this->host};dbname={$this->database}";
+    }
+
+    private function getUser(): string
+    {
+        return $this->user;
+    }
+
+    private function getPassword(): string
+    {
+        return $this->password;
     }
 }
