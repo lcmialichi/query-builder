@@ -4,6 +4,7 @@ namespace QueryBuilder;
 
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Contracts\Connection;
+use QueryBuilder\Exception\MacroException;
 use QueryBuilder\Exception\ConnectionException;
 use QueryBuilder\Exception\QueryBuilderException;
 
@@ -11,22 +12,23 @@ class Orchestrator
 {
     public function __construct(private Connection $connection)
     {
+        $connection->disconnect();
+        $this->buildConnectionIfNotStablished();
     }
 
     public function __call(string $method, array $arguments): mixed
     {
-        $this->buildConnectionIfNotStablished();
         return $this->getMacroStatement($method, $arguments);
     }
 
-    /** @throws QueryBuilderException */
+    /** @throws MacroException */
     private function getMacroStatement(string $name, mixed $params): Macro
     {
         if ($this->macroStatementExists($name)) {
             return $this->instantiateMacroStatement($name, $params);
         }
 
-        throw QueryBuilderException::macroNotFound($name);
+        throw MacroException::macroNotFound($name);
     }
 
     private function macroStatementExists(string $macro): bool
@@ -37,7 +39,12 @@ class Orchestrator
     private function instantiateMacroStatement(string $name, mixed $params): Macro
     {
         $macro = $this->getMacroNamespace($name);
-        return new $macro($this, ...$params);
+        $macro = new $macro($this, ...$params);
+        if($macro instanceof Macro) {
+            return $macro;
+        }
+
+        throw  MacroException::macroNotInstance(Macro::class);
     }
 
     private function getMacroNamespace(string $name): string

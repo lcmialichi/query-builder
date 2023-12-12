@@ -6,10 +6,10 @@ namespace QueryBuilder\Macro\Statements;
 
 trait JoinStatement
 {
-    public function join(string $table, string $alias, string $on): self
+    public function join(string $table, string $on, ?string $alias = null): self
     {
         $this->addStatementOption(':join', [
-            "statement" => ":type JOIN :table ON :on",
+            "statement" => ":type JOIN :table :alias ON :on",
             ":type" => "INNER",
             ":table" => $table,
             ":alias" => $alias,
@@ -19,10 +19,10 @@ trait JoinStatement
     }
 
 
-    public function leftJoin(string $table, string $alias, string $on): self
+    public function leftJoin(string $table, string $on, ?string $alias = null): self
     {
         $this->addStatementOption(':join', [
-            "statement" => ":type JOIN :table ON :on",
+            "statement" => ":type JOIN :table :alias ON :on",
             ":type" => "LEFT",
             ":table" => $table,
             ":alias" => $alias,
@@ -32,10 +32,10 @@ trait JoinStatement
     }
 
 
-    public function rightJoin(string $table, string $alias, string $on): self
+    public function rightJoin(string $table, string $on, ?string $alias = null): self
     {
         $this->addStatementOption(':join', [
-            "statement" => ":type JOIN :table ON :on",
+            "statement" => ":type JOIN :table :alias ON :on",
             ":type" => "RIGHT",
             ":table" => $table,
             ":alias" => $alias,

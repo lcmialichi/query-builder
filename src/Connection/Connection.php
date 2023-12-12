@@ -78,4 +78,11 @@ class Connection implements \QueryBuilder\Contracts\Connection
     {
         return $this->password;
     }
+
+    public function disconnect(): void
+    {
+        if($this->hasConnection()){
+            unset(self::$connection);
+        }
+    }
 }

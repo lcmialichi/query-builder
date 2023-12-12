@@ -2,12 +2,18 @@
 
 namespace QueryBuilder\Macro\Statements;
 
+use QueryBuilder\Macro\Expression;
+
 trait WhereStatement
 {
-    public function where(string|callable $column, ?string $operator = null, mixed $value = null): self
+    public function where(string|Expression $column, ?string $operator = null, mixed $value = null): self
     {
-        if (is_callable($column)) {
-            return $this->withExpression(":where", $column);
+        if ($column instanceof Expression) {
+            $this->addExpressionToStatement(":where", ":whereType ( :expression )", $column, [
+                ":whereType" => $this->typeWhereIfNotExists("AND")
+            ]);
+
+            return $this;
         }
 
         $this->addStatementOption(':where', [
@@ -15,15 +21,19 @@ trait WhereStatement
             ":operator" => $operator,
             ":column" => $column,
             ":value" => $value,
-            ":whereType" => $this->typeWhereIfNotExists("and")
+            ":whereType" => $this->typeWhereIfNotExists("AND")
         ]);
         return $this;
     }
 
-    public function orWhere(string $column, string $operator, mixed $value): self
+    public function orWhere(string|Expression $column, string $operator, mixed $value): self
     {
-        if (is_callable($column)) {
-            return $this->withExpression(":where", $column);
+        if ($column instanceof Expression) {
+            $this->addExpressionToStatement(":where", ":whereType ( :expression )", $column, [
+                ":whereType" => $this->typeWhereIfNotExists("OR")
+            ]);
+
+            return $this;
         }
 
         $this->addStatementOption(':where', [
@@ -31,7 +41,7 @@ trait WhereStatement
             ":operator" => $operator,
             ":column" => $column,
             ":value" => $value,
-            ":whereType" => $this->typeWhereIfNotExists("or")
+            ":whereType" => $this->typeWhereIfNotExists("OR")
         ]);
         return $this;
     }

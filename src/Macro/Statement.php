@@ -60,7 +60,7 @@ abstract class Statement
 
     private function getBuilder(array $params): Builder
     {
-        return new Builder(new BaseStructure($this, $params));
+        return new Builder(new BaseStructure($this, $params, $this->getParams()));
     }
 
     public function buildQuery(): string
@@ -85,6 +85,23 @@ abstract class Statement
         ]);
 
         return $this;
+    }
+
+    protected function addExpressionToStatement(
+        string $target,
+        string $defaultStatement,
+        Expression $expression,
+        array $params = []
+    ) {
+        $this->addStatementOption($target, [
+            "statement" => $defaultStatement,
+            ":expression" => [[
+                "statement" => $expression->resolve(),
+                ...$expression->getParameters()
+            ]],
+            ...$params,
+
+        ]);
     }
 
     protected function exists(string $context): bool

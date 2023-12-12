@@ -12,7 +12,12 @@ class QueryBuilder extends Orchestrator
 {
     public function withRollBack(): self
     {
-        $this->connection->disableAutoCommit();
+        $this->getConnection()->disableAutoCommit();
         return $this;
+    }
+
+    public function expression(?string $col = null): \QueryBuilder\Macro\Expression
+    {
+        return new \QueryBuilder\Macro\Expression($col);
     }
 }

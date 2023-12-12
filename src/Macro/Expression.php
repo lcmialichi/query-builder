@@ -9,20 +9,24 @@ class Expression
     private $parameter = [];
 
     private array $expList = [
-        "and" => "and",
-        "or" => "or",
+        "and" => "AND",
+        "or" => "OR",
         "where" => "%s %s %s",
-        "in" => "%s in ( %s )",
-        "notIn" => "%s not in ( %s )",
-        "between" => "%s between %s and %s",
-        "notBetween" => "%s not between %s and %s",
-        "like" => "%s like %s",
-        "notLike" => "%s not like %s",
-        "isNull" => "%s is null",
-        "notNull" => "%s is not null",
+        "in" => "%s IN ( %s )",
+        "notIn" => "%s NOT IN ( %s )",
+        "between" => "%s BETWEEN %s AND %s",
+        "notBetween" => "%s NOT BETWEEN %s AND %s",
+        "like" => "%s LIKE %s",
+        "notLike" => "%s NOT LIKE %s",
+        "isNull" => "%s IS NULL",
+        "notNull" => "%s IS NOT NULL",
     ];
 
     private array $expressionUsage = [];
+
+    public function __construct(private ?string $field = null)
+    {
+    }
 
     public function and ()
     {
@@ -36,113 +40,113 @@ class Expression
         return $this;
     }
 
-    public function where(string $column, string $operator = null, mixed $value = null): self
+    public function where(string $operator = null, mixed $value = null): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column,
+                ":column_$id" => $this->getCol(),
                 ":operator_$id" => $operator,
-                ":value_$id" => $value
+                ":values_$id" => $value
             ]
         );
 
         return $this;
     }
 
-    public function in(string $column, string|array $values): self
+    public function in(string|array $values): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column,
-                ":values_$id" => implode(', ',$values),
+                ":column_$id" => $this->getCol(),
+                ":values_$id" => $values,
             ]
         );
 
         return $this;
     }
 
-    public function notIn(string $column, string|array $values): self
+    public function notIn(string|array $values): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column,
-                ":values_$id" => implode(', ',$values),
+                ":column_$id" => $this->getCol(),
+                ":values_$id" => $values,
             ]
         );
 
         return $this;
     }
 
-    public function between(string $column, mixed $value1, mixed $value2): self
+    public function between(mixed $value1, mixed $value2): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column,
-                ":value1_$id" => $value1,
-                ":value2_$id" => $value2,
+                ":column_$id" => $this->getCol(),
+                ":values_1_$id" => $value1,
+                ":values_2_$id" => $value2,
             ]
         );
         return $this;
     }
 
-    public function notBetween(string $column, mixed $value1, mixed $value2): self
+    public function notBetween(mixed $value1, mixed $value2): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column,
-                ":value1_$id" => $value1,
-                ":value2_$id" => $value2,
+                ":column_$id" => $this->getCol(),
+                ":values_1_$id" => $value1,
+                ":values_2_$id" => $value2,
             ]
         );
         return $this;
     }
 
-    public function like(string $column, string $value): self
+    public function like(string $value): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column,
-                ":value_$id" => $value
+                ":column_$id" => $this->getCol(),
+                ":values_$id" => $value
             ]
         );
         return $this;
     }
 
-    public function notLike(string $column, string $value): self
+    public function notLike(string $value): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column,
-                ":value_$id" => $value
+                ":column_$id" => $this->getCol(),
+                ":values_$id" => $value
             ]
         );
         return $this;
     }
 
-    public function isNull(string $column): self
+    public function isNull(): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column
+                ":column_$id" => $this->getCol()
             ]
         );
         return $this;
     }
 
-    public function notNull(string $column): self
+    public function notNull(): self
     {
         $id = uniqid();
         $this->addExpression(
             $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $column
+                ":column_$id" => $this->getCol()
             ]
         );
         return $this;
@@ -174,7 +178,7 @@ class Expression
         $this->addParameters($arguments);
     }
 
-    public function getExpression(): string
+    public function resolve(): string
     {
         return implode(" ", $this->expressionUsage);
     }
@@ -194,22 +198,33 @@ class Expression
         return !empty($this->expressionUsage);
     }
 
-    public function getLastExpression(): string
+    private function getLastExpression(): string
     {
         return end($this->expressionUsage);
     }
 
-    public function addAndExpressionIfNotExists(): void
+    private function addAndExpressionIfNotExists(): void
     {
         if (!$this->hasExpression()) {
             return;
         }
 
         $lastExpression = $this->getLastExpression();
-        if ($lastExpression == "and" || $lastExpression == "or") {
+        if ($lastExpression == "AND" || $lastExpression == "OR") {
             return;
         }
 
-        $this->expressionUsage[] = "and";
+        $this->expressionUsage[] = "AND";
+    }
+
+    public function col(string $column): self
+    {
+        $this->field = $column;
+        return $this;
+    }
+
+    private function getCol(): string
+    {
+        return $this->field;
     }
 }

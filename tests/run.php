@@ -2,7 +2,6 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-use QueryBuilder\Usuario;
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Connection\Connection;
 
@@ -11,12 +10,17 @@ $qb = new QueryBuilder(
         "127.0.0.1",
         "root",
         123,
-        ""
+        "tim_visits"
     )
 );
 
-
 $fetch = $qb->withRollBack()
-    ->select()
+    ->select(["teste" => "abc"])
     ->from("users")
-    ->execute();
+    ->where($qb->expression("id")->between(1, 2)->notNull()->col("teste")->in([":IdDoUser", 2, 3]))
+    ->orWhere("id", ">", 1)
+    // ->addParam(":IdDoUser", 2020)
+    ->join("users", "users.id = visits.user_id", "us")
+    ->toSql();
+
+dd($fetch);

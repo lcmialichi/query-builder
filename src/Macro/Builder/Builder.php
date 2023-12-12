@@ -18,9 +18,9 @@ class Builder
         foreach (self::PRIORITY_LIST as $item) {
             $this->addIntoQuery($this->baseStrucute->get($item));
         }
-        
+
         $this->setQuery(
-            $this->replaceOptions($this->getQuery(), $this->baseStrucute->getParameters())
+            $this->replaceOptions($this->getQuery(), $this->baseStrucute->getQueryParameters())
         );
 
         return $this;
@@ -41,26 +41,42 @@ class Builder
         return $this->query;
     }
 
-    private function replaceOptions(string $statemnt, array $paramemters): string
+    /** @param array<mixed> $parameters */
+    private function replaceOptions(string $statement, array $paramemters): string
     {
-        preg_match_all("/:[^\s]*\s?/", $statemnt, $matches);
-        foreach ($matches[0] as $replace) {
-            $replace = trim($replace);
-            $data = dot($replace, $paramemters);
-            if (is_array($data)) {
-                $build = [];
-                foreach ($data as $key => $value) {
-                    $build[$key] = $value;
-                    if (isset($value['statement'])) {
-                        $build[$key] = $this->replaceOptions($value['statement'], $value);
-                    }
-                }
-                $data = implode($this->baseStrucute->getDelimiter($replace), $build);
-            }
-            $statemnt = str_replace($replace, $data, $statemnt);
+        foreach ($this->getMatches($statement) as $context) {
+            $context = trim($context);
+            $itemToReplace =
+                $this->baseStrucute->prepareValue(
+                    $context,
+                    $this->prepareReplements(dot($context, $paramemters))
+                );
+
+            $statement = str_replace($context, $itemToReplace, $statement);
         }
 
-        return $statemnt;
+        return $statement;
+    }
+
+    private function prepareReplements(mixed $itemToReplace): array
+    {   
+        $build = [];
+        if(!is_array($itemToReplace)) {
+            $itemToReplace = [$itemToReplace];
+        }
+        foreach ($itemToReplace as $key => $value) {
+            $build[$key] = $value;
+            if (isset($value['statement'])) {
+                $build[$key] = $this->replaceOptions($value['statement'], $value);
+            }
+        }
+        return $build;
+    }
+
+    private function getMatches(string $statement): array
+    {
+        preg_match_all("/:[^\s]*\s?/", $statement, $matches);
+        return $matches[0];
     }
 
 }

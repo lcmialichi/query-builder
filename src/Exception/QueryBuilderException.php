@@ -12,9 +12,4 @@ class QueryBuilderException extends Exception
     {
         parent::__construct("[QB] " . $message);
     }
-
-    public static function macroNotFound(string $macro): self
-    {
-        return new self(sprintf("Macro %s does not exist", $macro));
-    }
 }
