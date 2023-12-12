@@ -77,4 +77,9 @@ class QueryResult
         return $this->statement->rowCount();
     }
 
+    public function lastId(): bool|string
+    {
+        return $this->connection()->lastInsertId();
+    }
+
 }

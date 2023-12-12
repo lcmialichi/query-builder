@@ -29,6 +29,7 @@ abstract class Statement
         return $this->params;
     }
 
+    /** @return $this */
     public function addParams(array $params): self
     {
         foreach ($params as $param => $value) {
@@ -37,7 +38,8 @@ abstract class Statement
         return $this;
     }
 
-    public function addParam(string $param, mixed $value): self
+    /** @return $this */
+    public function addParam(string $param, mixed $value): Self
     {
         $this->params[$param] = $value;
         return $this;
