@@ -2,7 +2,8 @@
 
 namespace QueryBuilder;
 
-use QueryBuilder\Macro\Expression;
+use QueryBuilder\Contracts\Expression;
+use QueryBuilder\Macro\Expressions\Expr;
 
 
 /**
@@ -19,9 +20,9 @@ class QueryBuilder extends Orchestrator
         return $this;
     }
 
-    public function expr(): Expression
+    public function expr(?string $column = null): Expression
     {
-        return new Expression;
+        return new Expr($column);
     }
 
 }

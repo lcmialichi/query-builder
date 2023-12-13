@@ -7,7 +7,7 @@ namespace QueryBuilder\Macro\Expressions;
 use QueryBuilder\Contracts\Expression;
 use QueryBuilder\Macro\Expressions\ExpressionOrchestrator;
 
-class Where extends ExpressionOrchestrator implements Expression
+class Expr extends ExpressionOrchestrator implements Expression
 {
     private array $expList = [
         "and" => "AND",
@@ -21,6 +21,10 @@ class Where extends ExpressionOrchestrator implements Expression
         "notLike" => "%s NOT LIKE %s",
         "isNull" => "%s IS NULL",
         "notNull" => "%s IS NOT NULL",
+        "case" => "CASE :when :else :end",
+        "when" => "WHEN %s THEN %s",
+        "else" => "ELSE :else",
+        "end" => "END"
     ];
 
     public function getExprList(): array
@@ -153,6 +157,57 @@ class Where extends ExpressionOrchestrator implements Expression
                 ":column_$id" => $this->getCol()
             ]
         );
+        return $this;
+    }
+
+    public function case (): self
+    {
+        $this->addExpression(
+            $this->getExpressionStatement(__FUNCTION__), [
+                ":when" => []
+            ]
+        );
+
+        return $this;
+    }
+
+    public function when(string $when = null, mixed $then = null): self
+    {
+        $uniqId = uniqid();
+        $parameters = [
+            ":when_$uniqId" => $when,
+            ":then_$uniqId" => $then,
+        ];
+
+        $this->addParameterTo(":when", [
+            "statement" => $this->replaceOnStatement(
+                $this->getExpressionStatement("when"),
+                $parameters
+            ),
+            ...$parameters
+        ]);
+        return $this;
+
+    }
+
+    public function else (mixed $else = null): self
+    {
+        $this->addParameters([
+            ":else" => [
+                "statement" => $this->getExpressionStatement(__FUNCTION__),
+                ":else" => $else
+            ]
+        ]);
+        return $this;
+    }
+
+    public function end(): self
+    {
+        $this->addParameters([
+            ":end" => [
+                "statement" => $this->getExpressionStatement(__FUNCTION__),
+            ]]);
+            
         return $this;
     }
 

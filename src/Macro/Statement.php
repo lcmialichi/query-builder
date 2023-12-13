@@ -72,22 +72,9 @@ abstract class Statement
         return $builder->build()->getQuery();
     }
 
-    public function expression(): \QueryBuilder\Macro\Expression
+    public function expression(?string $column): Expression
     {
-        return new \QueryBuilder\Macro\Expression;
-    }
-
-    /** @return array<mixed> */
-    protected function withExpression(string $context, callable $callable, string $andOr = "and"): self
-    {
-        $expr = $callable($this->expression());
-        $this->addStatementOption($context, [
-            "statement" => sprintf(":andOr ( %s )", $expr->getExpression()),
-            ":andOr" => $this->exists($context) ? $andOr : null,
-            ...$expr->getParameters()
-        ]);
-
-        return $this;
+        return $this->queryBuilder->expr($column);
     }
 
     protected function addExpressionToStatement(

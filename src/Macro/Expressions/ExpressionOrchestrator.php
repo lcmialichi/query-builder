@@ -38,7 +38,7 @@ abstract class ExpressionOrchestrator
                 }
                 $reference = &$reference[$key];
                 if ($i-- == 1) {
-                    $reference = array_merge($reference, $parameters);
+                    $reference[] = $parameters;
                 }
             }
         }
