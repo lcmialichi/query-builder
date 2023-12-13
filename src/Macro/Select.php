@@ -51,17 +51,14 @@ class Select extends Statement implements Macro
         }
 
         $withAlias = !array_is_list($params);
-        foreach ($params as $key => $value) {
-            $field = $key;
-            $alias = $value;
-
+        foreach ($params as $field => $alias) {
             if (!$withAlias) {
-                $field = $value;
+                $field = $alias;
                 $alias = null;
             }
 
             if ($this->isExpression($field)) {
-                $this->addFieldExpression($field, $alias);
+                $this->addFieldExpression($field);
                 continue;
             }
 
@@ -71,7 +68,7 @@ class Select extends Statement implements Macro
         return $this;
     }
 
-    private function addFieldExpression(Expression $expression, ?string $alias)
+    private function addFieldExpression(Expression $expression, ?string $alias = null)
     {
         $this->addStatementOption(":fields", [
             "statement" => "( :expression ) " . (!$alias ? "" : " AS :alias"),
