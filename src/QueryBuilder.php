@@ -2,6 +2,9 @@
 
 namespace QueryBuilder;
 
+use QueryBuilder\Macro\Expression;
+
+
 /**
  * @method \QueryBuilder\Macro\Statement select(?array $columns = null)
  * @method \QueryBuilder\Macro\Statement insert(array $values)
@@ -16,8 +19,9 @@ class QueryBuilder extends Orchestrator
         return $this;
     }
 
-    public function expression(?string $col = null): \QueryBuilder\Macro\Expression
+    public function expr(): Expression
     {
-        return new \QueryBuilder\Macro\Expression($col);
+        return new Expression;
     }
+
 }

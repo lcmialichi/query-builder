@@ -11,7 +11,7 @@ class BaseStructure
         "macro" => [
             ':select' => 'SELECT :fields FROM :table.name :table.alias',
             ':insert' => 'INSERT INTO :table.name :table.alias ( :fields ) VALUES ( :values )',
-            ':update' => 'UPDATE :table.name :table.alias SET :fields',
+            ':update' => 'UPDATE :table.name :table.alias SET :sets',
             ':delete' => 'DELETE FROM :table.name :table.alias'
         ],
         "micro" => [
@@ -24,6 +24,7 @@ class BaseStructure
 
     private const INPUT_ASSIGNMENT = [
         ":values" => "'%s'",
+        ":value" => "'%s'",
         ":alias" => "`%s`",
     ];
 
@@ -55,7 +56,7 @@ class BaseStructure
         return isset($this->queryParameters[$parameter]);
     }
 
-    public function hasValueParameter(string $parameter): bool
+    public function hasValueParameter(?string $parameter): bool
     {
         return isset($this->valueParameters[$parameter]);
     }
@@ -127,7 +128,8 @@ class BaseStructure
     private function getDelimiter(string $field): string
     {
         return match ($field) {
-            ":fields" => ",",
+            ":fields" => ", ",
+            ":sets" => ", ",
             ":values" => ", ",
             ":value" => ", ",
             ":group" => ", ",

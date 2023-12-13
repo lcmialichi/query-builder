@@ -3,6 +3,7 @@
 namespace QueryBuilder\Macro;
 
 use QueryBuilder\QueryBuilder;
+use QueryBuilder\Contracts\Expression;
 use QueryBuilder\Macro\Builder\Builder;
 use QueryBuilder\Connection\QueryResult;
 use QueryBuilder\Macro\Builder\BaseStructure;
@@ -39,7 +40,7 @@ abstract class Statement
     }
 
     /** @return $this */
-    public function addParam(string $param, mixed $value): Self
+    public function addParam(string $param, mixed $value): self
     {
         $this->params[$param] = $value;
         return $this;
@@ -71,9 +72,9 @@ abstract class Statement
         return $builder->build()->getQuery();
     }
 
-    public function expression(): Expression
+    public function expression(): \QueryBuilder\Macro\Expression
     {
-        return new Expression;
+        return new \QueryBuilder\Macro\Expression;
     }
 
     /** @return array<mixed> */

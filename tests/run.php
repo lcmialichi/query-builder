@@ -13,3 +13,15 @@ $qb = new QueryBuilder(
         "teste"
     )
 );
+
+$teste = $qb->update("user")->set(
+    [
+        "name" => ":value",
+        "email" => "abc"
+    ]
+)->addParam(":value", "assa")->where($qb->expr()->select()
+        ->case()->when("name", "teste")
+        ->when("mais um", "oiutro")
+        ->else("isso é um teste")
+        ->end());
+dd($teste->toSql());
