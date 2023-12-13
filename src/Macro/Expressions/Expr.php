@@ -36,13 +36,13 @@ class Expr extends ExpressionOrchestrator implements Expression
     {
     }
 
-    public function and ()
+    public function and (): self
     {
         $this->addExpression($this->getExpressionStatement(__FUNCTION__));
         return $this;
     }
 
-    public function or ()
+    public function or (): self
     {
         $this->addExpression($this->getExpressionStatement(__FUNCTION__));
         return $this;
@@ -192,11 +192,9 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function else (mixed $else = null): self
     {
-        $this->addParameters([
-            ":else" => [
-                "statement" => $this->getExpressionStatement(__FUNCTION__),
-                ":else" => $else
-            ]
+        $this->addParameterTo(":else", [
+            "statement" => $this->getExpressionStatement(__FUNCTION__),
+            ":else" => $else
         ]);
         return $this;
     }
@@ -207,33 +205,8 @@ class Expr extends ExpressionOrchestrator implements Expression
             ":end" => [
                 "statement" => $this->getExpressionStatement(__FUNCTION__),
             ]]);
-            
+
         return $this;
-    }
-
-    protected function addExpression(string $statement, array $arguments = []): void
-    {
-        if ($statement != "and" && $statement != "or") {
-            $this->addAndExpressionIfNotExists();
-
-        }
-        $this->expressionUsage[] = sprintf($statement, ...array_keys($arguments));
-        $this->addParameters($arguments);
-    }
-
-
-    private function addAndExpressionIfNotExists(): void
-    {
-        if (!$this->hasExpression()) {
-            return;
-        }
-
-        $lastExpression = $this->getLastExpression();
-        if ($lastExpression == "AND" || $lastExpression == "OR") {
-            return;
-        }
-
-        $this->expressionUsage[] = "AND";
     }
 
     public function col(string $column): self

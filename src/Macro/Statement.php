@@ -94,6 +94,11 @@ abstract class Statement
         ]);
     }
 
+    protected function isExpression(mixed $context): bool
+    {
+        return $context instanceof Expression;
+    }
+
     protected function exists(string $context): bool
     {
         return !empty($this->statement[$context]);

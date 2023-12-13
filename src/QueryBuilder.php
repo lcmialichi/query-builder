@@ -5,9 +5,8 @@ namespace QueryBuilder;
 use QueryBuilder\Contracts\Expression;
 use QueryBuilder\Macro\Expressions\Expr;
 
-
 /**
- * @method \QueryBuilder\Macro\Statement select(?array $columns = null)
+ * @method \QueryBuilder\Macro\Statement select(mixed $columns = null)
  * @method \QueryBuilder\Macro\Statement insert(array $values)
  * @method \QueryBuilder\Macro\Statement update(string $table)
  * @method \QueryBuilder\Macro\Statement delete()

@@ -2,10 +2,11 @@
 
 namespace QueryBuilder\Macro;
 
-use QueryBuilder\Macro\Statements\FromStatement;
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Macro\Statement;
+use QueryBuilder\Contracts\Expression;
+use QueryBuilder\Macro\Statements\FromStatement;
 use QueryBuilder\Macro\Statements\JoinStatement;
 use QueryBuilder\Macro\Statements\WhereStatement;
 use QueryBuilder\Macro\Statements\GroupByStatement;
@@ -19,13 +20,13 @@ class Select extends Statement implements Macro
         GroupByStatement,
         OrderByStatement;
 
-    public function __construct(private QueryBuilder $queryBuilder, ?array $params = null)
+    public function __construct(private QueryBuilder $queryBuilder, mixed $params = null)
     {
         parent::__construct($queryBuilder);
         $this->fields($params ?? ["*"]);
     }
 
-    public function fields(array|string $params): self
+    public function fields(mixed $params): self
     {
         $this->removeStatementOption(":fields");
         $this->addFields($params);
@@ -43,17 +44,43 @@ class Select extends Statement implements Macro
         return $this;
     }
 
-    public function addFields(array $params): self
+    public function addFields(mixed $params): self
     {
+        if (!is_array($params)) {
+            $params = [$params];
+        }
+
+        $withAlias = !array_is_list($params);
         foreach ($params as $key => $value) {
-            if (!array_is_list($params)) {
-                $this->addField($key, $value);
+            $field = $key;
+            $alias = $value;
+
+            if (!$withAlias) {
+                $field = $value;
+                $alias = null;
+            }
+
+            if ($this->isExpression($field)) {
+                $this->addFieldExpression($field, $alias);
                 continue;
             }
-            $this->addField($value);
+
+            $this->addField($field, $alias);
 
         }
         return $this;
+    }
+
+    private function addFieldExpression(Expression $expression, ?string $alias)
+    {
+        $this->addStatementOption(":fields", [
+            "statement" => "( :expression ) " . (!$alias ? "" : " AS :alias"),
+            ":alias" => $alias,
+            ":expression" => [[
+                "statement" => $expression->resolve(),
+                ...$expression->getParameters()
+            ]],
+        ]);
     }
 
 }

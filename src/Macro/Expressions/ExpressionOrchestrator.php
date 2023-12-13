@@ -27,10 +27,11 @@ abstract class ExpressionOrchestrator
 
     public function addParameterTo(string $notation, array $parameters): void
     {
-        $parameters = array_merge(dot($notation ?? [], $this->parameter), $parameters);
+        $parameters = array_merge(dot($notation, $this->parameter) ?? [], $parameters);
+        $notation = explode(".", $notation);
+
         if (!is_null($notation)) {
             $reference = &$this->parameter;
-            $notation = explode(".", $notation);
             $i = count($notation);
             foreach ($notation as $key) {
                 if (!isset($reference[$key])) {
