@@ -35,6 +35,10 @@ interface Expression
 
     public function notNull(): self;
 
+    public function equal(string|int $value): self;
+
+    public function diff(string|int $value): self;
+
     public function case(): CaseWhen;
 
     public function col(string $column): self;

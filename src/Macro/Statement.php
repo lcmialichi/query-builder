@@ -6,16 +6,18 @@ use QueryBuilder\QueryBuilder;
 use QueryBuilder\Contracts\Expression;
 use QueryBuilder\Macro\Builder\Builder;
 use QueryBuilder\Connection\QueryResult;
+use QueryBuilder\Macro\Expressions\Expr;
 use QueryBuilder\Macro\Builder\BaseStructure;
 
-abstract class Statement
+class Statement
 {
     protected array $statement = [];
 
     private array $params = [];
 
-    public function __construct(private QueryBuilder $queryBuilder)
+    public function __construct(private QueryBuilder $queryBuilder, ?Statement $previous = null)
     {
+        $this->addParams($previous?->getParams() ?? []);
     }
 
     /** @return array<mixed> */
@@ -72,9 +74,9 @@ abstract class Statement
         return $builder->build()->getQuery();
     }
 
-    public function expression(?string $column): Expression
+    public function expr(?string $column = null): Expression
     {
-        return $this->queryBuilder->expr($column);
+        return new Expr($column, $this);
     }
 
     protected function addExpressionToStatement(

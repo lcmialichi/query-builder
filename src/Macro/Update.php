@@ -14,10 +14,10 @@ class Update extends Statement implements Macro
     use WhereStatement,
         SetStatement;
 
-    public function __construct(QueryBuilder $queryBuilder, string $table)
+    public function __construct(QueryBuilder $queryBuilder, ?Statement $previous = null, string $table)
     {
         $this->setStatementOption(":table.name", $table);
-        parent::__construct($queryBuilder);
+        parent::__construct($queryBuilder, $previous);
     }
 
 }

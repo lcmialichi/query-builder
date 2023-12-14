@@ -2,6 +2,8 @@
 
 namespace QueryBuilder;
 
+use QueryBuilder\Macro\Statement;
+use QueryBuilder\Contracts\Expression;
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Contracts\Connection;
 use QueryBuilder\Exception\MacroException;
@@ -10,6 +12,8 @@ use QueryBuilder\Exception\QueryBuilderException;
 
 class Orchestrator
 {
+    private ?Expression $previous = null;
+
     public function __construct(private Connection $connection)
     {
         $connection->disconnect();
@@ -39,12 +43,12 @@ class Orchestrator
     private function instantiateMacroStatement(string $name, mixed $params): Macro
     {
         $macro = $this->getMacroNamespace($name);
-        $macro = new $macro($this, ...$params);
-        if($macro instanceof Macro) {
+        $macro = new $macro($this, $this->getPrevious(), ...$params);
+        if ($macro instanceof Macro) {
             return $macro;
         }
 
-        throw  MacroException::macroNotInstance(Macro::class);
+        throw MacroException::macroNotInstance(Macro::class);
     }
 
     private function getMacroNamespace(string $name): string
@@ -69,8 +73,23 @@ class Orchestrator
         }
     }
 
+    protected function newStatement(): Statement
+    {
+        return new Statement($this);
+    }
+
+    protected function setPrevious(Expression $expression): void
+    {
+        $this->previous = $expression;
+    }
+    public function getPrevious(): ?Statement
+    {
+        return $this->previous?->getStatement();
+    }
+
     public function getConnection(): Connection
     {
         return $this->connection;
     }
+
 }

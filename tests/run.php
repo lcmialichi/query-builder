@@ -14,8 +14,4 @@ $qb = new QueryBuilder(
     )
 );
 
-$teste = $qb->select(
-    $qb->expr()->case()->when("9", "8")->when("7", "6")->else("5")->end()
-    ->case()->when("0", "id")->when("1", "2")->else("3")->end()
-)->from("user");
-dd($teste->toSql());
+

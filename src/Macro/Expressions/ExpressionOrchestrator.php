@@ -4,11 +4,23 @@ declare(strict_types=1);
 
 namespace QueryBuilder\Macro\Expressions;
 
+use QueryBuilder\Macro\Statement;
+use QueryBuilder\QueryBuilder;
+
 abstract class ExpressionOrchestrator
 {
+    public function __construct(private Statement &$statement)
+    {
+    }
+
     protected array $expressionUsage = [];
 
     protected array $parameter = [];
+
+    protected function getStatement(): Statement
+    {
+        return $this->statement;
+    }
 
     public function resolve(): string
     {
@@ -33,9 +45,7 @@ abstract class ExpressionOrchestrator
 
     public function addParameterTo(string $notation, array $parameters): void
     {
-        // $parameters = array_merge(dot($notation, $this->parameter) ?? [], $parameters);
         $notation = explode(".", $notation);
-
         if (!is_null($notation)) {
             $reference = &$this->parameter;
             $i = count($notation);
@@ -108,5 +118,11 @@ abstract class ExpressionOrchestrator
     }
 
     public abstract function getExprList(): array;
+
+    public function __toString(): string
+    {
+        $this->getStatement()->addParams($this->getParameters());
+        return $this->resolve();
+    }
 
 }

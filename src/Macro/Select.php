@@ -20,9 +20,9 @@ class Select extends Statement implements Macro
         GroupByStatement,
         OrderByStatement;
 
-    public function __construct(private QueryBuilder $queryBuilder, mixed $params = null)
+    public function __construct(private QueryBuilder $queryBuilder, ?Statement $previous = null, mixed $params = null)
     {
-        parent::__construct($queryBuilder);
+        parent::__construct($queryBuilder, $previous);
         $this->fields($params ?? ["*"]);
     }
 

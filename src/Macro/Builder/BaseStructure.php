@@ -23,8 +23,8 @@ class BaseStructure
     ];
 
     private const INPUT_ASSIGNMENT = [
-        ":table.name" => "`%s`",
-        ":field" => "`%s`",
+        // ":table.name" => "`%s`",
+        // ":field" => "`%s`",
     ];
 
     public function __construct(

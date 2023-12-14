@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace QueryBuilder\Macro\Expressions;
 
+use QueryBuilder\Macro\Statement;
 use QueryBuilder\Contracts\Expression;
 use QueryBuilder\Exception\ExpressionException;
 use QueryBuilder\Macro\Expressions\ExpressionOrchestrator;
@@ -23,13 +24,15 @@ class Expr extends ExpressionOrchestrator implements Expression
         ":isNull" => "%s IS NULL",
         ":notNull" => "%s IS NOT NULL",
         ":caseWhen" => "CASE :caseWhen :else :end",
-        ":separetors" => ":separator"
+        ":separetors" => ":separator",
+        ":equal" => "%s = %s",
+        ":diff" => "%s != %s",
     ];
 
     private array $parameters = [];
 
     public function case (): CaseWhen
-    {   
+    {
         return new CaseWhen($this);
     }
 
@@ -38,8 +41,9 @@ class Expr extends ExpressionOrchestrator implements Expression
         return $this->expList;
     }
 
-    public function __construct(private ?string $field = null)
+    public function __construct(private ?string $field = null, private Statement &$statement)
     {
+        parent::__construct($statement);
     }
 
     public function and (): self
@@ -157,6 +161,28 @@ class Expr extends ExpressionOrchestrator implements Expression
         return $this;
     }
 
+    public function equal(string|int $value): self
+    {
+        $this->addExpression(
+            $this->getExpressionStatement(":equal"), [
+                ":column" => $this->getCol(),
+                ":value" => $value
+            ]
+        );
+        return $this;
+    }
+
+    public function diff(string|int $value): self
+    {
+        $this->addExpression(
+            $this->getExpressionStatement(":diff"), [
+                ":column" => $this->getCol(),
+                ":value" => $value
+            ]
+        );
+        return $this;
+    }
+
     public function col(string $column): self
     {
         $this->field = $column;
@@ -165,7 +191,7 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     private function getCol(): string
     {
-        if(isset($this->field)){
+        if (isset($this->field)) {
             return $this->field;
         }
 
