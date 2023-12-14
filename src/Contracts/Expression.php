@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 namespace QueryBuilder\Contracts;
+use QueryBuilder\Macro\Expressions\CaseWhen;
 
 interface Expression
 {
     public function resolve(): string;
 
     public function getParameters(): array;
+
+    public function addParameterTo(string $notation, array $parameters): void;
 
     public function and (): self;
 
@@ -32,12 +35,10 @@ interface Expression
 
     public function notNull(): self;
 
-    public function case(): self;
+    public function case(): CaseWhen;
 
-    public function when(string $value1, string $value2): self;
+    public function col(string $column): self;
 
-    public function else(mixed $value): self;
-
-    public function end(): self;
+    public function addExpression(string $statement, array $arguments = []): void;
 
 }

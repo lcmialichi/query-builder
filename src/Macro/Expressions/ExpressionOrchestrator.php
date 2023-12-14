@@ -20,6 +20,12 @@ abstract class ExpressionOrchestrator
         return $this->parameter;
     }
 
+    public function setSeparetor(string $separetor): self
+    {
+        $this->addParameters([":separator" => $separetor]);
+        return $this;
+    }
+
     protected function addParameters(array $parameters): void
     {
         $this->parameter = array_merge($this->parameter, $parameters);
@@ -27,7 +33,7 @@ abstract class ExpressionOrchestrator
 
     public function addParameterTo(string $notation, array $parameters): void
     {
-        $parameters = array_merge(dot($notation, $this->parameter) ?? [], $parameters);
+        // $parameters = array_merge(dot($notation, $this->parameter) ?? [], $parameters);
         $notation = explode(".", $notation);
 
         if (!is_null($notation)) {
@@ -50,15 +56,31 @@ abstract class ExpressionOrchestrator
         return !empty($this->expressionUsage);
     }
 
-    protected function getLastExpression(): string
+    protected function getLastExpression(): false|string
     {
         return end($this->expressionUsage);
     }
 
-    protected function addExpression(string $statement, array $arguments = []): void
+    public function addExpression(string $statement, array $arguments = []): void
     {
+        if ($this->getLastExpression() && !$this->lastExpressionIn("AND", "OR")) {
+            if ($statement !== "OR" && $statement !== "AND") {
+                $this->expressionUsage[] = ":separator";
+            }
+        }
+        $arguments = $this->buildArgs($arguments);
         $this->expressionUsage[] = $this->replaceOnStatement($statement, $arguments);
         $this->addParameters($arguments);
+    }
+
+    protected function buildArgs(array $args): array
+    {
+        $items = [];
+        foreach ($args as $key => $value) {
+            $items[$key . "_" . uniqid()] = $value;
+        }
+
+        return $items;
     }
 
     protected function replaceOnStatement(string $statement, array $arguments = []): string
@@ -73,14 +95,17 @@ abstract class ExpressionOrchestrator
         }
 
         return $this->getExprList()[$name] ?? "";
+    }
 
+    protected function lastExpressionIn(string ...$expressions): bool
+    {
+        return in_array($this->getLastExpression(), $expressions);
     }
 
     protected function expressionExists(string $name): bool
     {
         return isset($this->getExprList()[$name]);
     }
-
 
     public abstract function getExprList(): array;
 

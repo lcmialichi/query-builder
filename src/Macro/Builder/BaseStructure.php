@@ -94,7 +94,6 @@ class BaseStructure
     public function prepareValue(string $context, mixed $value): mixed
     {
         $context = $this->prepareContext($context);
-
         if (is_array($value)) {
             return implode(
                 $this->getDelimiter($context),

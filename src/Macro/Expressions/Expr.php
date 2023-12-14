@@ -5,27 +5,33 @@ declare(strict_types=1);
 namespace QueryBuilder\Macro\Expressions;
 
 use QueryBuilder\Contracts\Expression;
+use QueryBuilder\Exception\ExpressionException;
 use QueryBuilder\Macro\Expressions\ExpressionOrchestrator;
 
 class Expr extends ExpressionOrchestrator implements Expression
 {
     private array $expList = [
-        "and" => "AND",
-        "or" => "OR",
-        "where" => "%s %s %s",
-        "in" => "%s IN ( %s )",
-        "notIn" => "%s NOT IN ( %s )",
-        "between" => "%s BETWEEN %s AND %s",
-        "notBetween" => "%s NOT BETWEEN %s AND %s",
-        "like" => "%s LIKE %s",
-        "notLike" => "%s NOT LIKE %s",
-        "isNull" => "%s IS NULL",
-        "notNull" => "%s IS NOT NULL",
-        "case" => "CASE :when :else :end",
-        "when" => "WHEN %s THEN %s",
-        "else" => "ELSE :else",
-        "end" => "END"
+        ":and" => "AND",
+        ":or" => "OR",
+        ":where" => "%s %s %s",
+        ":in" => "%s IN ( %s )",
+        ":notIn" => "%s NOT IN ( %s )",
+        ":between" => "%s BETWEEN %s AND %s",
+        ":notBetween" => "%s NOT BETWEEN %s AND %s",
+        ":like" => "%s LIKE %s",
+        ":notLike" => "%s NOT LIKE %s",
+        ":isNull" => "%s IS NULL",
+        ":notNull" => "%s IS NOT NULL",
+        ":caseWhen" => "CASE :caseWhen :else :end",
+        ":separetors" => ":separator"
     ];
+
+    private array $parameters = [];
+
+    public function case (): CaseWhen
+    {   
+        return new CaseWhen($this);
+    }
 
     public function getExprList(): array
     {
@@ -38,24 +44,23 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function and (): self
     {
-        $this->addExpression($this->getExpressionStatement(__FUNCTION__));
+        $this->addExpression($this->getExpressionStatement(":and"));
         return $this;
     }
 
     public function or (): self
     {
-        $this->addExpression($this->getExpressionStatement(__FUNCTION__));
+        $this->addExpression($this->getExpressionStatement(":or"));
         return $this;
     }
 
     public function where(string $operator = null, mixed $value = null): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol(),
-                ":operator_$id" => $operator,
-                ":values_$id" => $value
+            $this->getExpressionStatement(":where"), [
+                ":column" => $this->getCol(),
+                ":operator" => $operator,
+                ":values" => $value
             ]
         );
 
@@ -64,11 +69,10 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function in(string|array $values): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol(),
-                ":values_$id" => $values,
+            $this->getExpressionStatement(":in"), [
+                ":column" => $this->getCol(),
+                ":values" => $values,
             ]
         );
 
@@ -77,11 +81,10 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function notIn(string|array $values): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol(),
-                ":values_$id" => $values,
+            $this->getExpressionStatement(":notIn"), [
+                ":column" => $this->getCol(),
+                ":values" => $values,
             ]
         );
 
@@ -90,12 +93,11 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function between(mixed $value1, mixed $value2): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol(),
-                ":values_1_$id" => $value1,
-                ":values_2_$id" => $value2,
+            $this->getExpressionStatement(":between"), [
+                ":column" => $this->getCol(),
+                ":values_1" => $value1,
+                ":values_2" => $value2,
             ]
         );
         return $this;
@@ -103,12 +105,11 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function notBetween(mixed $value1, mixed $value2): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol(),
-                ":values_1_$id" => $value1,
-                ":values_2_$id" => $value2,
+            $this->getExpressionStatement(":notBetween"), [
+                ":column" => $this->getCol(),
+                ":values_1" => $value1,
+                ":values_2" => $value2,
             ]
         );
         return $this;
@@ -116,11 +117,10 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function like(string $value): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol(),
-                ":values_$id" => $value
+            $this->getExpressionStatement(":like"), [
+                ":column" => $this->getCol(),
+                ":values" => $value
             ]
         );
         return $this;
@@ -128,11 +128,10 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function notLike(string $value): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol(),
-                ":values_$id" => $value
+            $this->getExpressionStatement(":notLike"), [
+                ":column" => $this->getCol(),
+                ":values" => $value
             ]
         );
         return $this;
@@ -140,10 +139,9 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function isNull(): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol()
+            $this->getExpressionStatement(":isNull"), [
+                ":column" => $this->getCol()
             ]
         );
         return $this;
@@ -151,61 +149,11 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     public function notNull(): self
     {
-        $id = uniqid();
         $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":column_$id" => $this->getCol()
+            $this->getExpressionStatement(":notNull"), [
+                ":column" => $this->getCol()
             ]
         );
-        return $this;
-    }
-
-    public function case (): self
-    {
-        $this->addExpression(
-            $this->getExpressionStatement(__FUNCTION__), [
-                ":when" => []
-            ]
-        );
-
-        return $this;
-    }
-
-    public function when(string $when = null, mixed $then = null): self
-    {
-        $uniqId = uniqid();
-        $parameters = [
-            ":when_$uniqId" => $when,
-            ":then_$uniqId" => $then,
-        ];
-
-        $this->addParameterTo(":when", [
-            "statement" => $this->replaceOnStatement(
-                $this->getExpressionStatement("when"),
-                $parameters
-            ),
-            ...$parameters
-        ]);
-        return $this;
-
-    }
-
-    public function else (mixed $else = null): self
-    {
-        $this->addParameterTo(":else", [
-            "statement" => $this->getExpressionStatement(__FUNCTION__),
-            ":else" => $else
-        ]);
-        return $this;
-    }
-
-    public function end(): self
-    {
-        $this->addParameters([
-            ":end" => [
-                "statement" => $this->getExpressionStatement(__FUNCTION__),
-            ]]);
-
         return $this;
     }
 
@@ -217,6 +165,10 @@ class Expr extends ExpressionOrchestrator implements Expression
 
     private function getCol(): string
     {
-        return $this->field;
+        if(isset($this->field)){
+            return $this->field;
+        }
+
+        throw ExpressionException::columnNotSet(__CLASS__, __METHOD__);
     }
 }

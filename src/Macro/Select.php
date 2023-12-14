@@ -71,10 +71,10 @@ class Select extends Statement implements Macro
     private function addFieldExpression(Expression $expression, ?string $alias = null)
     {
         $this->addStatementOption(":fields", [
-            "statement" => "( :expression ) " . (!$alias ? "" : " AS :alias"),
+            "statement" => ":expression" . (!$alias ? "" : " AS :alias"),
             ":alias" => $alias,
             ":expression" => [[
-                "statement" => $expression->resolve(),
+                "statement" => $expression->setSeparetor(", ")->resolve(),
                 ...$expression->getParameters()
             ]],
         ]);

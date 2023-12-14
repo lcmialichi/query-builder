@@ -52,16 +52,16 @@ class Builder
                     $this->prepareReplements(dot($context, $paramemters))
                 );
 
-            $statement = str_replace($context, $itemToReplace, $statement);
+            $statement = preg_replace('/' . $context . '/', $itemToReplace, $statement, 1);
         }
 
         return $statement;
     }
 
     private function prepareReplements(mixed $itemToReplace): array
-    {   
+    {
         $build = [];
-        if(!is_array($itemToReplace)) {
+        if (!is_array($itemToReplace)) {
             $itemToReplace = [$itemToReplace];
         }
         foreach ($itemToReplace as $key => $value) {
