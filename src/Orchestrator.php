@@ -2,7 +2,7 @@
 
 namespace QueryBuilder;
 
-use QueryBuilder\Contracts\Expression;
+use QueryBuilder\Macro\Expressions\Expression;
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Contracts\Connection;
 use QueryBuilder\Exception\MacroException;
@@ -11,13 +11,10 @@ use QueryBuilder\Macro\Bags\ParameterBag;
 
 class Orchestrator
 {
-    private ParameterBag $parameterBag;
-
     public function __construct(private Connection $connection)
     {
         $connection->disconnect();
         $this->buildConnectionIfNotStablished();
-        $this->buildParameters();
     }
 
     public function __call(string $method, array $arguments): mixed
@@ -43,7 +40,7 @@ class Orchestrator
     private function instantiateMacroStatement(string $name, mixed $params): Macro
     {
         $macro = $this->getMacroNamespace($name);
-        $macro = new $macro($this, $this->getPrevious(), ...$params);
+        $macro = new $macro($this, new ParameterBag(), ...$params);
         if ($macro instanceof Macro) {
             return $macro;
         }
@@ -71,11 +68,6 @@ class Orchestrator
         } catch (\Throwable $e) {
             throw ConnectionException::unableToEstablishConnection($e->getMessage());
         }
-    }
-
-    private function buildParameters(array $params = []): void
-    {
-        $this->parameterBag = new ParameterBag($params);
     }
 
     public function getConnection(): Connection

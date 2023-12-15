@@ -2,6 +2,8 @@
 
 namespace QueryBuilder\Macro\Builder;
 
+use QueryBuilder\Macro\Expressions\Expression;
+
 class Builder
 {
     private string $query = "";
@@ -65,18 +67,42 @@ class Builder
             $itemToReplace = [$itemToReplace];
         }
         foreach ($itemToReplace as $key => $value) {
-            $build[$key] = $value;
-            if (isset($value['statement'])) {
-                $build[$key] = $this->replaceOptions($value['statement'], $value);
-            }
+            $build[$key] = $this->resolveStatement($value);
+            
         }
         return $build;
     }
+
+    private function resolveStatement(mixed $value): mixed
+    {
+        if (isset($value['statement'])) {
+            return $this->replaceOptions($value['statement'], $value);
+        }
+
+        if (is_string($value) && $this->isSerialized($value)) {
+            $unserialized = unserialize($value);
+            if ($unserialized instanceof Expression) {
+                return $this->replaceOptions($unserialized->resolve(), $unserialized->getParameters());
+            }
+        }
+
+        return $value;
+    }
+
 
     private function getMatches(string $statement): array
     {
         preg_match_all("/:[^\s]*\s?/", $statement, $matches);
         return $matches[0];
+    }
+
+    /**
+     * I know using @ on standard php functions is not a good idea but
+     * will work for these purposes
+     */
+    private function isSerialized(string $string): bool
+    {
+        return (@unserialize($string) !== false);
     }
 
 }

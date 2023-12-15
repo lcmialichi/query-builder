@@ -3,8 +3,8 @@
 namespace QueryBuilder;
 
 use QueryBuilder\Macro\Statement;
-use QueryBuilder\Contracts\Expression;
-use QueryBuilder\Macro\Expressions\Expr;
+use QueryBuilder\Macro\Expressions\Expression;
+use QueryBuilder\Macro\Bags\ParameterBag;
 
 /**
  * @method \QueryBuilder\Macro\Statement select(mixed $columns = null)
@@ -22,6 +22,6 @@ class QueryBuilder extends Orchestrator
 
     public function expr(?string $col = null): Expression
     {
-       return new Expr($col, $this->buildParameters());
+        return new Expression($col, new ParameterBag());
     }
 }

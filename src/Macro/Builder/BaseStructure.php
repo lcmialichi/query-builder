@@ -2,8 +2,9 @@
 
 namespace QueryBuilder\Macro\Builder;
 
-use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Enum\Verbosity;
+use QueryBuilder\Contracts\Macro;
+use QueryBuilder\Macro\Bags\ParameterBag;
 
 class BaseStructure
 {
@@ -29,8 +30,8 @@ class BaseStructure
 
     public function __construct(
         private Macro $macro,
-        private array $queryParameters = [],
-        private array $valueParameters = [],
+        private ParameterBag $queryParameters,
+        private ParameterBag $valueParameters,
         private Verbosity $verbosity = Verbosity::VERBOSE
     ) {
     }
@@ -47,27 +48,27 @@ class BaseStructure
 
     public function getQueryParameters(): array
     {
-        return $this->queryParameters;
+        return $this->queryParameters->getParameters();
     }
 
     public function hasQueryParameter(string $parameter): bool
     {
-        return isset($this->queryParameters[$parameter]);
+        return $this->queryParameters->has($parameter);
     }
 
     public function hasValueParameter(?string $parameter): bool
     {
-        return isset($this->valueParameters[$parameter]);
+        return $this->valueParameters->has($parameter);
     }
 
     public function getValueParameter(string $parameter): mixed
     {
-        return $this->valueParameters[$parameter];
+        return $this->valueParameters->get($parameter);
     }
 
     public function has(string $statement): bool
     {
-        return isset($this->queryParameters[$statement]);
+        return $this->queryParameters->has($statement);
     }
 
     public function get(string $statement): string

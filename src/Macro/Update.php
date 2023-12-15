@@ -6,6 +6,7 @@ namespace QueryBuilder\Macro;
 
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Contracts\Macro;
+use QueryBuilder\Macro\Bags\ParameterBag;
 use QueryBuilder\Macro\Statements\SetStatement;
 use QueryBuilder\Macro\Statements\WhereStatement;
 
@@ -14,10 +15,9 @@ class Update extends Statement implements Macro
     use WhereStatement,
         SetStatement;
 
-    public function __construct(QueryBuilder $queryBuilder, string $table)
+    public function __construct(QueryBuilder $queryBuilder, ParameterBag $parameterBag, string $table)
     {
         $this->setStatementOption(":table.name", $table);
-        parent::__construct($queryBuilder);
+        parent::__construct($queryBuilder, $parameterBag);
     }
-
 }

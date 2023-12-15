@@ -8,52 +8,51 @@ use QueryBuilder\Macro\Bags\ParameterBag;
 use QueryBuilder\Exception\ExpressionException;
 
 abstract class ExpressionOrchestrator
-{
-    protected array $expressionUsage = [];
+{   
+    private array $expressionUsage = [];
 
-    protected array $parameter = [];
+    protected ?string $alias = null;
 
-    public function __construct(private ?string $field = null, private ParameterBag $parameterBag)
+    private array $basicStatement = [
+        "statement" => "( %s ) :alias",
+    ];
+
+    public function __construct(protected ?string $field = null, private ParameterBag $parameterBag)
     {
+        $this->setSeparetor(",");
+    }
+
+    public function withAlias(string $alias): self
+    {
+        $this->alias = $alias;
+        return $this;
+    }
+
+    public function getAlias(): ?string
+    {
+        return $this->alias;
     }
 
     public function resolve(): string
-    {
-        return implode(" ", $this->expressionUsage);
-    }
-
-    public function getParameters(): array
-    {
-        return $this->parameter;
+    {   
+        $this->getParameterBag()->add([":alias" => $this->getAlias()]);
+        return sprintf($this->basicStatement['statement'], implode(" ", $this->expressionUsage));
     }
 
     public function setSeparetor(string $separetor): self
     {
-        $this->addParameters([":separator" => $separetor]);
+        $this->getParameterBag()->add([":separator" => $separetor]);
         return $this;
     }
 
     protected function addParameters(array $parameters): void
     {
-        $this->parameter = array_merge($this->parameter, $parameters);
+        $this->getParameterBag()->add($parameters);
     }
 
     public function addParameterTo(string $notation, array $parameters): void
     {
-        $notation = explode(".", $notation);
-        if (!is_null($notation)) {
-            $reference = &$this->parameter;
-            $i = count($notation);
-            foreach ($notation as $key) {
-                if (!isset($reference[$key])) {
-                    $reference[$key] = [];
-                }
-                $reference = &$reference[$key];
-                if ($i-- == 1) {
-                    $reference[] = $parameters;
-                }
-            }
-        }
+        $this->getParameterBag()->addParameterTo($notation, $parameters);
     }
 
     protected function hasExpression(): bool
@@ -66,8 +65,9 @@ abstract class ExpressionOrchestrator
         return end($this->expressionUsage);
     }
 
-    public function addExpression(string $statement, array $arguments = []): void
+    public function addExpression(string $context, array $arguments = []): void
     {
+        $statement = $this->getExpressionStatement($context);
         if ($this->getLastExpression() && !$this->lastExpressionIn("AND", "OR")) {
             if ($statement !== "OR" && $statement !== "AND") {
                 $this->expressionUsage[] = ":separator";
@@ -123,15 +123,30 @@ abstract class ExpressionOrchestrator
         throw ExpressionException::columnNotSet($this::class, __METHOD__);
     }
 
-    public function col(string $column): self
-    {
-        $this->field = $column;
-        return $this;
-    }
-
     private function getParameterBag(): ParameterBag
     {
         return $this->parameterBag;
+    }
+
+    public function getParameters(): array
+    {
+        return $this->getParameterBag()->getParameters();
+    }
+
+
+    public function __toString(): string
+    {
+        return serialize($this);
+    }
+
+    public function __serialize(): array
+    {
+        return [
+            "parameterBag" => $this->parameterBag,
+            "basicStatement" => $this->basicStatement,
+            "alias" => $this->alias,
+            "expressionUsage" => $this->expressionUsage,
+        ];
     }
 
 }

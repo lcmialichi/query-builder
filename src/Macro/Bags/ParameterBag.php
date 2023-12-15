@@ -11,26 +11,62 @@ class ParameterBag
     ) {
     }
 
-    private function add(array $parameters): void
+    public function has(string $key): bool
     {
-        $this->parameters[] = $parameters;
+        return isset($this->parameters[$key]);
+    }
+
+    public function get(string $key): mixed
+    {
+        return $this->parameters[$key];
+    }
+
+    public function getParameters(): array
+    {
+        return $this->parameters;
+    }
+
+    public function add(array $parameters): void
+    {
+        $this->parameters = array_merge($this->parameters, $parameters);
+    }
+
+    public function addParameters(array $parameters): void
+    {
+        foreach ($parameters as $param => $value) {
+            $this->addIntoParameter($param, $value);
+        }
+    }
+
+    public function addIntoParameter(string $key, mixed $value): void
+    {
+        $this->parameters[$key][] = $value;
+    }
+
+    public function setParameter(string $key, mixed $value): void
+    {
+        $this->parameters[$key] = $value;
     }
 
     public function addParameterTo(string $notation, array $parameters): void
     {
         $notation = explode(".", $notation);
         if (!is_null($notation)) {
-            $reference = &$this->$parameters;
-            $i = count($notation);
+            $reference = &$this->parameters;
+            $count = count($notation);
             foreach ($notation as $key) {
                 if (!isset($reference[$key])) {
                     $reference[$key] = [];
                 }
-                $reference = &$reference[$key];
-                if ($i-- == 1) {
-                    $reference[] = $parameters;
+                if ($count-- == 1) {
+                    $reference[$key][] = $parameters;
                 }
             }
         }
+    }
+
+    public function remove(string $key): void
+    {
+        unset($this->parameters[$key]);
     }
 }

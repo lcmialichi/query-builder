@@ -2,8 +2,9 @@
 
 namespace QueryBuilder\Macro;
 
+use QueryBuilder\Macro\Bags\ParameterBag;
 use QueryBuilder\QueryBuilder;
-use QueryBuilder\Contracts\Expression;
+use QueryBuilder\Macro\Expressions\Expression;
 use QueryBuilder\Macro\Builder\Builder;
 use QueryBuilder\Connection\QueryResult;
 use QueryBuilder\Macro\Expressions\Expr;
@@ -15,8 +16,13 @@ class Statement
 
     private array $params = [];
 
-    public function __construct(private QueryBuilder $queryBuilder)
-    {
+    private ParameterBag $parameterBag;
+
+    public function __construct(
+        private QueryBuilder $queryBuilder,
+        private ParameterBag $statementParameters
+    ) {
+        $this->parameterBag = new ParameterBag();
     }
 
     /** @return array<mixed> */
@@ -34,48 +40,46 @@ class Statement
     /** @return $this */
     public function addParams(array $params): self
     {
-        foreach ($params as $param => $value) {
-            $this->addParam($param, $value);
-        }
+        $this->getParameterBag()->addParameters($params);
         return $this;
     }
 
     /** @return $this */
     public function addParam(string $param, mixed $value): self
     {
-        $this->params[$param] = $value;
+        $this->getParameterBag()->setParameter($param, $value);
         return $this;
     }
 
     protected function addStatementOption(string $option, mixed $value): void
     {
-        $this->statement[$option][] = $value;
+        $this->statementParameters()->addIntoParameter($option, $value);
     }
 
     public function setStatementOption(string $option, mixed $value): void
     {
-        $this->statement[$option] = $value;
+        $this->statementParameters()->setParameter($option, $value);
     }
 
     protected function removeStatementOption(string $option): void
     {
-        unset($this->statement[$option]);
+        $this->statementParameters()->remove($option);
     }
 
-    private function getBuilder(array $params): Builder
+    private function getBuilder(ParameterBag $statementParameters): Builder
     {
-        return new Builder(new BaseStructure($this, $params, $this->getParams()));
+        return new Builder(new BaseStructure($this, $statementParameters, $this->getParameterBag()));
     }
 
     public function buildQuery(): string
     {
-        $builder = $this->getBuilder($this->getStatementOptions());
+        $builder = $this->getBuilder(($this->statementParameters()));
         return $builder->build()->getQuery();
     }
 
     public function expr(?string $column = null): Expression
     {
-        return new Expr($column, $this);
+        return new Expr($column, $this->parameterBag);
     }
 
     protected function addExpressionToStatement(
@@ -86,11 +90,7 @@ class Statement
     ) {
         $this->addStatementOption($target, [
             "statement" => $defaultStatement,
-            ":expression" => [[
-                "statement" => $expression->setSeparetor("and")->resolve(),
-                ...$expression->getParameters()
-            ]],
-            ...$params,
+            ":expression" => serialize($expression->setSeparetor("and"))
         ]);
     }
 
@@ -109,12 +109,22 @@ class Statement
         return $this->buildQuery();
     }
 
+    private function statementParameters(): ParameterBag
+    {
+        return $this->statementParameters;
+    }
+
+    private function getParameterBag(): ParameterBag
+    {
+        return $this->parameterBag;
+    }
+
     public function execute(): QueryResult
     {
         return (new QueryResult(
             $this->queryBuilder->getConnection(),
             $this->buildQuery(),
-            $this->getParams()
+            $this->getParameterBag()->getParameters()
         ))->execute();
     }
 

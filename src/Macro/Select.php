@@ -5,7 +5,8 @@ namespace QueryBuilder\Macro;
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Macro\Statement;
-use QueryBuilder\Contracts\Expression;
+use QueryBuilder\Macro\Expressions\Expression;
+use QueryBuilder\Macro\Bags\ParameterBag;
 use QueryBuilder\Macro\Statements\FromStatement;
 use QueryBuilder\Macro\Statements\JoinStatement;
 use QueryBuilder\Macro\Statements\WhereStatement;
@@ -20,9 +21,9 @@ class Select extends Statement implements Macro
         GroupByStatement,
         OrderByStatement;
 
-    public function __construct(private QueryBuilder $queryBuilder, mixed $params = null)
+    public function __construct(private QueryBuilder $queryBuilder, ParameterBag $parameterBag, mixed $params = null)
     {
-        parent::__construct($queryBuilder);
+        parent::__construct($queryBuilder, $parameterBag);
         $this->fields($params ?? ["*"]);
     }
 
@@ -68,15 +69,11 @@ class Select extends Statement implements Macro
         return $this;
     }
 
-    private function addFieldExpression(Expression $expression, ?string $alias = null)
+    private function addFieldExpression(Expression $expression)
     {
         $this->addStatementOption(":fields", [
-            "statement" => ":expression" . (!$alias ? "" : " AS :alias"),
-            ":alias" => $alias,
-            ":expression" => [[
-                "statement" => $expression->setSeparetor(", ")->resolve(),
-                ...$expression->getParameters()
-            ]],
+            "statement" => ":expression",
+            ":expression" => serialize($expression->setSeparetor(", "))
         ]);
     }
 

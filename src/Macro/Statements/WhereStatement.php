@@ -2,7 +2,7 @@
 
 namespace QueryBuilder\Macro\Statements;
 
-use QueryBuilder\Contracts\Expression;
+use QueryBuilder\Macro\Expressions\Expression;
 
 trait WhereStatement
 {

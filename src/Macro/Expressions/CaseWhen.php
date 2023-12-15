@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace QueryBuilder\Macro\Expressions;
 
-use QueryBuilder\Contracts\Expression;
+use QueryBuilder\Macro\Expressions\Expression;
 
 class CaseWhen
 {
