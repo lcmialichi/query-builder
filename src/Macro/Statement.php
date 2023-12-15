@@ -73,7 +73,7 @@ class Statement
 
     public function buildQuery(): string
     {
-        $builder = $this->getBuilder(($this->statementParameters()));
+        $builder = $this->getBuilder($this->statementParameters());
         return $builder->build()->getQuery();
     }
 

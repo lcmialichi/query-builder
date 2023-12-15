@@ -14,10 +14,10 @@ $qb = new QueryBuilder(
     )
 );
 
-$query = $qb->select([
-    $qb->expr()->count()->withAlias("count"),
-])->from("user")
+$query = $qb->select()->from("user")
 
 ->execute();
 
-dd($query->fetch());
+dd($query->fetchFunction(function ($data){
+    dd($data);
+}));
