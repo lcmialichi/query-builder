@@ -14,4 +14,4 @@ $qb = new QueryBuilder(
     )
 );
 
-
+dd($qb);

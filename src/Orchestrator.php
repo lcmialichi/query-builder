@@ -2,22 +2,22 @@
 
 namespace QueryBuilder;
 
-use QueryBuilder\Macro\Statement;
 use QueryBuilder\Contracts\Expression;
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Contracts\Connection;
 use QueryBuilder\Exception\MacroException;
 use QueryBuilder\Exception\ConnectionException;
-use QueryBuilder\Exception\QueryBuilderException;
+use QueryBuilder\Macro\Bags\ParameterBag;
 
 class Orchestrator
 {
-    private ?Expression $previous = null;
+    private ParameterBag $parameterBag;
 
     public function __construct(private Connection $connection)
     {
         $connection->disconnect();
         $this->buildConnectionIfNotStablished();
+        $this->buildParameters();
     }
 
     public function __call(string $method, array $arguments): mixed
@@ -73,18 +73,9 @@ class Orchestrator
         }
     }
 
-    protected function newStatement(): Statement
+    private function buildParameters(array $params = []): void
     {
-        return new Statement($this);
-    }
-
-    protected function setPrevious(Expression $expression): void
-    {
-        $this->previous = $expression;
-    }
-    public function getPrevious(): ?Statement
-    {
-        return $this->previous?->getStatement();
+        $this->parameterBag = new ParameterBag($params);
     }
 
     public function getConnection(): Connection

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace QueryBuilder\Macro\Expressions;
 
-use QueryBuilder\Macro\Statement;
 use QueryBuilder\Contracts\Expression;
-use QueryBuilder\Exception\ExpressionException;
 use QueryBuilder\Macro\Expressions\ExpressionOrchestrator;
 
 class Expr extends ExpressionOrchestrator implements Expression
@@ -39,11 +37,6 @@ class Expr extends ExpressionOrchestrator implements Expression
     public function getExprList(): array
     {
         return $this->expList;
-    }
-
-    public function __construct(private ?string $field = null, private Statement &$statement)
-    {
-        parent::__construct($statement);
     }
 
     public function and (): self
@@ -181,20 +174,5 @@ class Expr extends ExpressionOrchestrator implements Expression
             ]
         );
         return $this;
-    }
-
-    public function col(string $column): self
-    {
-        $this->field = $column;
-        return $this;
-    }
-
-    private function getCol(): string
-    {
-        if (isset($this->field)) {
-            return $this->field;
-        }
-
-        throw ExpressionException::columnNotSet(__CLASS__, __METHOD__);
     }
 }

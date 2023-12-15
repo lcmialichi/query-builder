@@ -4,22 +4,17 @@ declare(strict_types=1);
 
 namespace QueryBuilder\Macro\Expressions;
 
-use QueryBuilder\Macro\Statement;
-use QueryBuilder\QueryBuilder;
+use QueryBuilder\Macro\Bags\ParameterBag;
+use QueryBuilder\Exception\ExpressionException;
 
 abstract class ExpressionOrchestrator
 {
-    public function __construct(private Statement &$statement)
-    {
-    }
-
     protected array $expressionUsage = [];
 
     protected array $parameter = [];
 
-    protected function getStatement(): Statement
+    public function __construct(private ?string $field = null, private ParameterBag $parameterBag)
     {
-        return $this->statement;
     }
 
     public function resolve(): string
@@ -119,10 +114,24 @@ abstract class ExpressionOrchestrator
 
     public abstract function getExprList(): array;
 
-    public function __toString(): string
+    protected function getCol(): string
     {
-        $this->getStatement()->addParams($this->getParameters());
-        return $this->resolve();
+        if (isset($this->field)) {
+            return $this->field;
+        }
+
+        throw ExpressionException::columnNotSet($this::class, __METHOD__);
+    }
+
+    public function col(string $column): self
+    {
+        $this->field = $column;
+        return $this;
+    }
+
+    private function getParameterBag(): ParameterBag
+    {
+        return $this->parameterBag;
     }
 
 }

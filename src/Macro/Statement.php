@@ -15,9 +15,8 @@ class Statement
 
     private array $params = [];
 
-    public function __construct(private QueryBuilder $queryBuilder, ?Statement $previous = null)
+    public function __construct(private QueryBuilder $queryBuilder)
     {
-        $this->addParams($previous?->getParams() ?? []);
     }
 
     /** @return array<mixed> */
@@ -88,11 +87,10 @@ class Statement
         $this->addStatementOption($target, [
             "statement" => $defaultStatement,
             ":expression" => [[
-                "statement" => $expression->resolve(),
+                "statement" => $expression->setSeparetor("and")->resolve(),
                 ...$expression->getParameters()
             ]],
             ...$params,
-
         ]);
     }
 

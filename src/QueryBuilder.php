@@ -20,11 +20,8 @@ class QueryBuilder extends Orchestrator
         return $this;
     }
 
-    public function expr(?string $col = null, ?Statement $statemnt = null): Expression
+    public function expr(?string $col = null): Expression
     {
-        $statement = $statemnt ?? $this->newStatement();
-        return $this->previous = new Expr($col, $statement);
+       return new Expr($col, $this->buildParameters());
     }
-
-
 }
