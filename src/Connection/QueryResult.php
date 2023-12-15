@@ -72,7 +72,6 @@ class QueryResult
         return $this->statement->getIterator();
     }
 
-
     public function rollBack(): bool
     {
         return $this->connection()->rollBack();
