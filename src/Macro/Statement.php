@@ -79,7 +79,7 @@ class Statement
 
     public function expr(?string $column = null): Expression
     {
-        return new Expr($column, $this->parameterBag);
+        return new Expression($column, $this->parameterBag);
     }
 
     protected function addExpressionToStatement(
