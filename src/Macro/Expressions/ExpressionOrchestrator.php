@@ -133,7 +133,6 @@ abstract class ExpressionOrchestrator
         return $this->getParameterBag()->getParameters();
     }
 
-
     public function __toString(): string
     {
         return serialize($this);
