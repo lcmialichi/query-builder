@@ -17,12 +17,16 @@ $qb = new QueryBuilder(
 $xpr = QueryBuilder::expr()->if("name = name", "name", "id");
 
 $query = $qb->select([
-    "id" => "idAlias"
-])->from("user")->limit(1)->offset(1)->where(
-        QueryBuilder::expr()->if(QueryBuilder::expr("id")->equals(1)->and()->diff(
-            QueryBuilder::expr()->caseWhen("id = 2", QueryBuilder::expr()->sum("id"))->else(QueryBuilder::expr()->count("id"))->end()
-        ), "name", "id")
-    )
+    "id" => "identifier",
+    "name" => "userName",
+    "birth_date" => "birthDate"
+])
+->from('users', "u")
+->join("address", "u.address_id = a.id", "a")
+->where('id', '=', ':Id')
+->orWhere("birth_date", ">", date("Y-m-d H:i:s"))
+->limit(10)
+->offset(1)
     ->toSql();
 
 dd($query);
