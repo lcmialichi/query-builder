@@ -5,10 +5,11 @@ namespace QueryBuilder\Macro;
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Macro\Statement;
-use QueryBuilder\Macro\Expressions\Expression;
 use QueryBuilder\Macro\Bags\ParameterBag;
+use QueryBuilder\Macro\Expressions\Expression;
 use QueryBuilder\Macro\Statements\FromStatement;
 use QueryBuilder\Macro\Statements\JoinStatement;
+use QueryBuilder\Macro\Statements\LimitStatement;
 use QueryBuilder\Macro\Statements\WhereStatement;
 use QueryBuilder\Macro\Statements\GroupByStatement;
 use QueryBuilder\Macro\Statements\OrderByStatement;
@@ -19,7 +20,8 @@ class Select extends Statement implements Macro
         WhereStatement,
         JoinStatement,
         GroupByStatement,
-        OrderByStatement;
+        OrderByStatement,
+        LimitStatement;
 
     public function __construct(private QueryBuilder $queryBuilder, ParameterBag $parameterBag, mixed $params = null)
     {

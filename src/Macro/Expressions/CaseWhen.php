@@ -48,10 +48,9 @@ class CaseWhen
 
     public function end(): Expression
     {
-        $uniqId = uniqid();
         $this->parameters[":end"][] = $this->statement[":end"];
-        $this->expression->addExpression(":caseWhen_" . $uniqId );
-        $this->expression->addParameterTo(":caseWhen_" . $uniqId, $this->parameters);
+        $this->expression->addExpression(":caseWhen");
+        $this->expression->addParameterTo(":caseWhen", $this->parameters);
         return $this->expression;
     }
 }

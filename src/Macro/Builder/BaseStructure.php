@@ -20,6 +20,8 @@ class BaseStructure
             ':join' => ' :join',
             ':group' => ' GROUP BY :group',
             ':order' => ' :order',
+            ':limit' => ' LIMIT :limit',
+            ':offset' => ' OFFSET :offset',
         ]
     ];
 

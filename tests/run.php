@@ -14,10 +14,15 @@ $qb = new QueryBuilder(
     )
 );
 
-$query = $qb->select()->from("user")
+$xpr = QueryBuilder::expr()->if("name = name", "name", "id");
 
-->execute();
+$query = $qb->select([
+    "id" => "idAlias"
+])->from("user")->limit(1)->offset(1)->where(
+        QueryBuilder::expr()->if(QueryBuilder::expr("id")->equals(1)->and()->diff(
+            QueryBuilder::expr()->caseWhen("id = 2", QueryBuilder::expr()->sum("id"))->else(QueryBuilder::expr()->count("id"))->end()
+        ), "name", "id")
+    )
+    ->toSql();
 
-dd($query->fetchFunction(function ($data){
-    dd($data);
-}));
+dd($query);

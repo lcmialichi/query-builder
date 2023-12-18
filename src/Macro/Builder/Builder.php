@@ -7,7 +7,7 @@ use QueryBuilder\Macro\Expressions\Expression;
 class Builder
 {
     private string $query = "";
-    private const PRIORITY_LIST = [':join', ':where', ':group', ':order'];
+    private const PRIORITY_LIST = [':join', ':where', ':group', ':order', ':limit', ':offset'];
 
     public function __construct(
         private BaseStructure $baseStrucute

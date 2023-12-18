@@ -24,7 +24,7 @@ class Expression extends ExpressionOrchestrator
         ":separetors" => ":separator",
         ":equal" => "%s = %s",
         ":diff" => "%s != %s",
-        ":if" => "IF( %s, %s, %s )",
+        ":if" => "IF( %s , %s , %s )",
         ":count" => "COUNT( %s )",
         ":sum" => "SUM( %s )",
         ":avg" => "AVG( %s )",

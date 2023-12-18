@@ -2,7 +2,6 @@
 
 namespace QueryBuilder;
 
-use QueryBuilder\Macro\Expressions\Expression;
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Contracts\Connection;
 use QueryBuilder\Exception\MacroException;
