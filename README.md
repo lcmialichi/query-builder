@@ -8,7 +8,7 @@ A simple and complete query builder to add practicality to your project
 - ***Instalation***
 - ***Connection***
 - ***Select statement***
-    - ***More Exaples***
+    - ***More Examples***
     - ***Expressions***
 - ***Insert statement***
 - ***Update statement***
@@ -18,7 +18,7 @@ A simple and complete query builder to add practicality to your project
 ## **Instalation**
 
 ```bash
-composer require lcmialichi/query-builder
+composer require lucasmialichi/query-builder
 ```
 
 ## **Connection:**

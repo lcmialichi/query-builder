@@ -12,7 +12,6 @@ use QueryBuilder\Macro\Builder\BaseStructure;
 
 class Statement
 {
-    protected array $statement = [];
 
     private array $params = [];
 
@@ -23,18 +22,6 @@ class Statement
         private ParameterBag $statementParameters
     ) {
         $this->parameterBag = new ParameterBag();
-    }
-
-    /** @return array<mixed> */
-    public function getStatementOptions(): array
-    {
-        return $this->statement;
-    }
-
-    /** @return array<mixed> */
-    public function getParams(): array
-    {
-        return $this->params;
     }
 
     /** @return $this */
@@ -101,7 +88,7 @@ class Statement
 
     protected function exists(string $context): bool
     {
-        return !empty($this->statement[$context]);
+        return $this->statementParameters->has($context);
     }
 
     public function toSql(): string
