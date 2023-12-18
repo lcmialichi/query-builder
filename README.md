@@ -59,7 +59,7 @@ Methods for query result:
 **PHP:**
 ```php
 $qb->select([
-    "id" => "identifier"
+    "id" => "identifier",
     "name" => "userName",
     "birth_date" => "birthDate"
 ])
