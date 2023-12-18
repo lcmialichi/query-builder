@@ -1,5 +1,8 @@
 {
     "name": "lucasmialichi/query-builder",
+    "description": "A simple query builder",
+    "type": "library",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "QueryBuilder\\": "src/"
