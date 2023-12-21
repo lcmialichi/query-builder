@@ -92,7 +92,7 @@ class Builder
 
     private function getMatches(string $statement): array
     {
-        preg_match_all("/:[^\s]*\s?/", $statement, $matches);
+        preg_match_all("/:[^\s\,\)]*\s?/", $statement, $matches);
         return $matches[0];
     }
 

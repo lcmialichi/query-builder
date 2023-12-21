@@ -14,7 +14,7 @@ abstract class ExpressionOrchestrator
     protected ?string $alias = null;
 
     private array $basicStatement = [
-        "statement" => "( %s ) :alias",
+        "statement" => "(%s) :alias",
     ];
 
     public function __construct(

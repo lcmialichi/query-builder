@@ -6,7 +6,6 @@ namespace QueryBuilder\Macro;
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Contracts\Macro;
 use QueryBuilder\Macro\Statement;
-use QueryBuilder\Macro\Bags\ParameterBag;
 use QueryBuilder\Macro\Statements\IntoStatement;
 
 class Insert extends Statement implements Macro
