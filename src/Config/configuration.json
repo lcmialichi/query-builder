@@ -1,7 +1,10 @@
 {
     "connection" : {
         "drivers" : [
-            "mysql"
+            "mysql",
+            "pgsql",
+            "sqlite",
+            "odbc"
         ]
     },
     "paths" : {

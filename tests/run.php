@@ -13,20 +13,3 @@ $qb = new QueryBuilder(
         "teste"
     )
 );
-
-$xpr = QueryBuilder::expr()->if("name = name", "name", "id");
-
-$query = $qb->select([
-    "id" => "identifier",
-    "name" => "userName",
-    "birth_date" => "birthDate"
-])
-->from('users', "u")
-->join("address", "u.address_id = a.id", "a")
-->where('id', '=', ':Id')
-->orWhere("birth_date", ">", date("Y-m-d H:i:s"))
-->limit(10)
-->offset(1)
-    ->toSql();
-
-dd($query);
