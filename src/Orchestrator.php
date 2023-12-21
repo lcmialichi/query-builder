@@ -18,20 +18,20 @@ class Orchestrator
 
     public function __call(string $method, array $arguments): mixed
     {
-        return $this->getMacroStatement($method, $arguments);
+        return $this->runMacro($method, $arguments);
     }
 
     /** @throws MacroException */
-    private function getMacroStatement(string $name, mixed $params): Macro
+    private function runMacro(string $name, mixed $params): Macro
     {
-        if ($this->macroStatementExists($name)) {
+        if ($this->macroExists($name)) {
             return $this->instantiateMacroStatement($name, $params);
         }
 
         throw MacroException::macroNotFound($name);
     }
 
-    private function macroStatementExists(string $macro): bool
+    private function macroExists(string $macro): bool
     {
         return class_exists($this->getMacroNamespace($macro));
     }
@@ -73,5 +73,4 @@ class Orchestrator
     {
         return $this->connection;
     }
-
 }

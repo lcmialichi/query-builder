@@ -12,7 +12,6 @@ use QueryBuilder\Macro\Builder\BaseStructure;
 
 class Statement
 {
-
     private array $params = [];
 
     private ParameterBag $parameterBag;

@@ -6,7 +6,7 @@ use QueryBuilder\Exception\ConnectionException;
 
 class Connection implements \QueryBuilder\Contracts\Connection
 {
-    protected static \PDO $connection;
+    protected \PDO $connection;
 
     public function __construct(
         private ?string $host,
@@ -41,17 +41,17 @@ class Connection implements \QueryBuilder\Contracts\Connection
         $this->connection()->commit();
     }
 
-    public static function hasConnection(): bool
+    public function hasConnection(): bool
     {
-        return isset(self::$connection);
+        return isset($this->connection);
     }
 
-    public static function connection(): \PDO
+    public function connection(): \PDO
     {
-        if (!isset(self::$connection)) {
+        if (!isset($this->connection)) {
             throw ConnectionException::connectionNotEstablished();
         }
-        return self::$connection;
+        return $this->connection;
     }
 
     public function driverExists(string $driver): bool
@@ -61,7 +61,7 @@ class Connection implements \QueryBuilder\Contracts\Connection
 
     private function setConnection(\PDO $connection): void
     {
-        self::$connection = $connection;
+        $this->connection = $connection;
     }
 
     private function getDsn(): string
@@ -81,8 +81,8 @@ class Connection implements \QueryBuilder\Contracts\Connection
 
     public function disconnect(): void
     {
-        if($this->hasConnection()){
-            unset(self::$connection);
+        if ($this->hasConnection()) {
+            unset($this->connection);
         }
     }
 }
