@@ -12,7 +12,6 @@ class Orchestrator
 {
     public function __construct(private Connection $connection)
     {
-        $connection->disconnect();
         $this->buildConnectionIfNotStablished();
     }
 
