@@ -6,11 +6,11 @@ trait OrderByStatement
 {
     public function orderBy(string $column, string $type = "ASC"): self
     {
-        $this->statement[':order'][] = [
+        $this->setStatementOptions(":order", [
             "statement" => ":column :type",
             ":column" => $column,
             ":type" => $type
-        ];
+        ]);
         return $this;
     }
 }
