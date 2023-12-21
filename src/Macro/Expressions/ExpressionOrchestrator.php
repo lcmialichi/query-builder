@@ -8,8 +8,8 @@ use QueryBuilder\Macro\Bags\ParameterBag;
 use QueryBuilder\Exception\ExpressionException;
 
 abstract class ExpressionOrchestrator
-{   
-    private array $expressionUsage = [];
+{
+    private array $expressions = [];
 
     protected ?string $alias = null;
 
@@ -17,8 +17,10 @@ abstract class ExpressionOrchestrator
         "statement" => "( %s ) :alias",
     ];
 
-    public function __construct(protected ?string $field = null, private ParameterBag $parameterBag)
-    {
+    public function __construct(
+        protected ?string $field = null,
+        private ParameterBag $parameterBag = new ParameterBag()
+    ) {
         $this->setSeparetor(",");
     }
 
@@ -34,9 +36,9 @@ abstract class ExpressionOrchestrator
     }
 
     public function resolve(): string
-    {   
+    {
         $this->getParameterBag()->add([":alias" => $this->getAlias()]);
-        return sprintf($this->basicStatement['statement'], implode(" ", $this->expressionUsage));
+        return sprintf($this->basicStatement['statement'], implode(" ", $this->expressions));
     }
 
     public function setSeparetor(string $separetor): self
@@ -57,12 +59,12 @@ abstract class ExpressionOrchestrator
 
     protected function hasExpression(): bool
     {
-        return !empty($this->expressionUsage);
+        return !empty($this->expressions);
     }
 
     protected function getLastExpression(): false|string
     {
-        return end($this->expressionUsage);
+        return end($this->expressions);
     }
 
     public function addExpression(string $context, array $arguments = []): void
@@ -70,11 +72,11 @@ abstract class ExpressionOrchestrator
         $statement = $this->getExpressionStatement($context);
         if ($this->getLastExpression() && !$this->lastExpressionIn("AND", "OR")) {
             if ($statement !== "OR" && $statement !== "AND") {
-                $this->expressionUsage[] = ":separator";
+                $this->expressions[] = ":separator";
             }
         }
         $arguments = $this->buildArgs($arguments);
-        $this->expressionUsage[] = $this->replaceOnStatement($statement, $arguments);
+        $this->expressions[] = $this->replaceOnStatement($statement, $arguments);
         $this->addParameters($arguments);
     }
 
@@ -128,7 +130,7 @@ abstract class ExpressionOrchestrator
         return $this->parameterBag;
     }
 
-    public function getParameters(): array
+    public function getParametersAsArray(): array
     {
         return $this->getParameterBag()->getParameters();
     }
@@ -144,7 +146,7 @@ abstract class ExpressionOrchestrator
             "parameterBag" => $this->parameterBag,
             "basicStatement" => $this->basicStatement,
             "alias" => $this->alias,
-            "expressionUsage" => $this->expressionUsage,
+            "expressions" => $this->expressions,
         ];
     }
 

@@ -209,8 +209,7 @@ class Expression extends ExpressionOrchestrator
     {
         $this->addExpression(":concat", [
             ":column" => implode(", ", $column)
-        ]
-        );
+        ]);
         return $this;
     }
 

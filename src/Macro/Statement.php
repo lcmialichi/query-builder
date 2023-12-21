@@ -11,58 +11,56 @@ use QueryBuilder\Macro\Builder\BaseStructure;
 
 class Statement
 {
-    private array $params = [];
-
     public function __construct(
         private QueryBuilder $queryBuilder,
-        private ParameterBag $statementParameters = new ParameterBag(),
-        private ParameterBag $parameterBag = new ParameterBag()
+        private ParameterBag $statementParametersBag = new ParameterBag(),
+        private ParameterBag $queryParameterBag = new ParameterBag()
     ) {
     }
 
     /** @return $this */
     public function addParams(array $params): self
     {
-        $this->getParameterBag()->addParameters($params);
+        $this->getQueryParameterBag()->addParameters($params);
         return $this;
     }
 
     /** @return $this */
     public function addParam(string $param, mixed $value): self
     {
-        $this->getParameterBag()->setParameter($param, $value);
+        $this->getQueryParameterBag()->setParameter($param, $value);
         return $this;
     }
 
     protected function addStatementOption(string $option, mixed $value): void
     {
-        $this->statementParameters()->addIntoParameter($option, $value);
+        $this->statementParametersBag()->addIntoParameter($option, $value);
     }
 
     public function setStatementOption(string $option, mixed $value): void
     {
-        $this->statementParameters()->setParameter($option, $value);
+        $this->statementParametersBag()->setParameter($option, $value);
     }
 
     protected function removeStatementOption(string $option): void
     {
-        $this->statementParameters()->remove($option);
+        $this->statementParametersBag()->remove($option);
     }
 
-    private function getBuilder(ParameterBag $statementParameters): Builder
+    private function getBuilder(ParameterBag $statementParametersBag): Builder
     {
-        return new Builder(new BaseStructure($this, $statementParameters, $this->getParameterBag()));
+        return new Builder(new BaseStructure($this, $statementParametersBag, $this->getQueryParameterBag()));
     }
 
     public function buildQuery(): string
     {
-        $builder = $this->getBuilder($this->statementParameters());
+        $builder = $this->getBuilder($this->statementParametersBag());
         return $builder->build()->getQuery();
     }
 
     public function expr(?string $column = null): Expression
     {
-        return new Expression($column, $this->parameterBag);
+        return new Expression($column);
     }
 
     protected function addExpressionToStatement(
@@ -84,7 +82,7 @@ class Statement
 
     protected function exists(string $context): bool
     {
-        return $this->statementParameters->has($context);
+        return $this->statementParametersBag->has($context);
     }
 
     public function toSql(): string
@@ -92,14 +90,14 @@ class Statement
         return $this->buildQuery();
     }
 
-    private function statementParameters(): ParameterBag
+    private function statementParametersBag(): ParameterBag
     {
-        return $this->statementParameters;
+        return $this->statementParametersBag;
     }
 
-    private function getParameterBag(): ParameterBag
+    private function getQueryParameterBag(): ParameterBag
     {
-        return $this->parameterBag;
+        return $this->queryParameterBag;
     }
 
     public function execute(): QueryResult
@@ -107,7 +105,7 @@ class Statement
         return (new QueryResult(
             $this->queryBuilder->getConnection(),
             $this->buildQuery(),
-            $this->getParameterBag()->getParameters()
+            $this->getQueryParameterBag()->getParameters()
         ))->execute();
     }
 

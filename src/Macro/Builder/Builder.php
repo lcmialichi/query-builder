@@ -82,7 +82,7 @@ class Builder
         if (is_string($value) && $this->isSerialized($value)) {
             $unserialized = unserialize($value);
             if ($unserialized instanceof Expression) {
-                return $this->replaceOptions($unserialized->resolve(), $unserialized->getParameters());
+                return $this->replaceOptions($unserialized->resolve(), $unserialized->getParametersAsArray());
             }
         }
 

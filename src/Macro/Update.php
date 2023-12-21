@@ -6,7 +6,6 @@ namespace QueryBuilder\Macro;
 
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Contracts\Macro;
-use QueryBuilder\Macro\Bags\ParameterBag;
 use QueryBuilder\Macro\Statements\SetStatement;
 use QueryBuilder\Macro\Statements\WhereStatement;
 
