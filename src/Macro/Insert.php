@@ -13,9 +13,9 @@ class Insert extends Statement implements Macro
 {
     use IntoStatement;
 
-    public function __construct(private QueryBuilder $queryBuilder, ParameterBag $parameterBag, private array $params = [])
+    public function __construct(private QueryBuilder $queryBuilder, private array $params = [])
     {
-        parent::__construct($queryBuilder, $parameterBag);
+        parent::__construct($queryBuilder);
         $this->setStatementOption(":fields", array_keys($params));
         $this->setStatementOption(":values", array_values($params));
     }

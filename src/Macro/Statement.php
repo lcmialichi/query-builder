@@ -7,20 +7,17 @@ use QueryBuilder\QueryBuilder;
 use QueryBuilder\Macro\Expressions\Expression;
 use QueryBuilder\Macro\Builder\Builder;
 use QueryBuilder\Connection\QueryResult;
-use QueryBuilder\Macro\Expressions\Expr;
 use QueryBuilder\Macro\Builder\BaseStructure;
 
 class Statement
 {
     private array $params = [];
 
-    private ParameterBag $parameterBag;
-
     public function __construct(
         private QueryBuilder $queryBuilder,
-        private ParameterBag $statementParameters
+        private ParameterBag $statementParameters = new ParameterBag(),
+        private ParameterBag $parameterBag = new ParameterBag()
     ) {
-        $this->parameterBag = new ParameterBag();
     }
 
     /** @return $this */

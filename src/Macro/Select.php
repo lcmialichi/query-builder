@@ -23,9 +23,9 @@ class Select extends Statement implements Macro
         OrderByStatement,
         LimitStatement;
 
-    public function __construct(private QueryBuilder $queryBuilder, ParameterBag $parameterBag, mixed $params = null)
+    public function __construct(private QueryBuilder $queryBuilder, mixed $params = null)
     {
-        parent::__construct($queryBuilder, $parameterBag);
+        parent::__construct($queryBuilder);
         $this->fields($params ?? ["*"]);
     }
 

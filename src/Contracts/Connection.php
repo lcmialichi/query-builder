@@ -8,7 +8,7 @@ interface Connection
 
     public function disconnect(): void;
 
-    public static function hasConnection(): bool;
+    public function hasConnection(): bool;
 
     public function disableAutoCommit(): void;
 

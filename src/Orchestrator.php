@@ -24,7 +24,7 @@ class Orchestrator
     private function runMacro(string $name, mixed $params): Macro
     {
         if ($this->macroExists($name)) {
-            return $this->instantiateMacroStatement($name, $params);
+            return $this->getMacroInstance($name, $params);
         }
 
         throw MacroException::macroNotFound($name);
@@ -35,10 +35,10 @@ class Orchestrator
         return class_exists($this->getMacroNamespace($macro));
     }
 
-    private function instantiateMacroStatement(string $name, mixed $params): Macro
+    private function getMacroInstance(string $name, mixed $params): Macro
     {
         $macro = $this->getMacroNamespace($name);
-        $macro = new $macro($this, new ParameterBag(), ...$params);
+        $macro = new $macro($this, ...$params);
         if ($macro instanceof Macro) {
             return $macro;
         }

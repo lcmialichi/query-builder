@@ -5,7 +5,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 use QueryBuilder\QueryBuilder;
 use QueryBuilder\Connection\Connection;
 
-$qb = new QueryBuilder(
+$query = new QueryBuilder(
     new Connection(
         "127.0.0.1",
         "root",

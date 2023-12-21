@@ -15,9 +15,9 @@ class Update extends Statement implements Macro
     use WhereStatement,
         SetStatement;
 
-    public function __construct(QueryBuilder $queryBuilder, ParameterBag $parameterBag, string $table)
+    public function __construct(QueryBuilder $queryBuilder, string $table)
     {
         $this->setStatementOption(":table.name", $table);
-        parent::__construct($queryBuilder, $parameterBag);
+        parent::__construct($queryBuilder);
     }
 }
