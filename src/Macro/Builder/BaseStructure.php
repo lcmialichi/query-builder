@@ -145,12 +145,12 @@ class BaseStructure
 
     private function hasInputAssignment(string $context): bool
     {
-        return isset(self::INPUT_ASSIGNMENT[explode("_", $context)[0]]);
+        return isset(self::INPUT_ASSIGNMENT[$context]);
     }
 
     private function getInputAssignment(string $context): ?string
     {
-        return self::INPUT_ASSIGNMENT[explode("_", $context)[0]] ?? null;
+        return self::INPUT_ASSIGNMENT[$context] ?? null;
     }
 
 }
