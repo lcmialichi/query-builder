@@ -117,7 +117,7 @@ the values are automatically binded to the query as parameters
 
 **SQL:**
 ```sql
-    INSERT INTO users (name, birth_date) VALUES ('alfredo', '1988-06-11')
+INSERT INTO users (name, birth_date) VALUES ('alfredo', '1988-06-11')
 ```
 ---
 ## **Update statement**
