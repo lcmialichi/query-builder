@@ -31,6 +31,7 @@ class Expression extends ExpressionOrchestrator
         ":max" => "MAX(%s)",
         ":min" => "MIN(%s)",
         ":concat" => "CONCAT(%s)",
+        ":raw" => "%s",
     ];
 
     public function caseWhen(string $when, string $then): CaseWhen
@@ -209,6 +210,14 @@ class Expression extends ExpressionOrchestrator
     {
         $this->addExpression(":concat", [
             ":column" => implode(", ", $column)
+        ]);
+        return $this;
+    }
+
+    public function raw(string $raw): self
+    {
+        $this->addExpression(":raw", [
+            ":raw" => $raw
         ]);
         return $this;
     }
