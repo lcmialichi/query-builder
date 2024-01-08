@@ -13,7 +13,8 @@ class BaseStructure
             ':select' => 'SELECT :fields FROM :table.name :table.alias',
             ':insert' => 'INSERT INTO :table.name :table.alias ( :fields ) VALUES ( :values )',
             ':update' => 'UPDATE :table.name :table.alias SET :sets',
-            ':delete' => 'DELETE FROM :table.name :table.alias'
+            ':delete' => 'DELETE FROM :table.name :table.alias',
+            ':raw' => ':raw',
         ],
         "micro" => [
             ':where' => ' WHERE :where',
