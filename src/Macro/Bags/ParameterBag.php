@@ -33,9 +33,7 @@ class ParameterBag
 
     public function addParameters(array $parameters): void
     {
-        foreach ($parameters as $param => $value) {
-            $this->addIntoParameter($param, $value);
-        }
+      $this->add($parameters);
     }
 
     public function addIntoParameter(string $key, mixed $value): void
