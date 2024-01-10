@@ -13,3 +13,11 @@ $query = new QueryBuilder(
         "teste"
     )
 );
+
+
+dd($query->create()->table("users")->columns(function ($column) {
+     $column->add("id")->int(10)->primaryKey()->autoIncrement();
+     $column->add("name")->varchar(45)->notNull()->default("");
+     $column->constraint("aaaaaa")->fk("bbbbb")->references("cccc", "dddd");
+     return $column;
+})->toSql());

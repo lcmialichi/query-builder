@@ -15,6 +15,8 @@ class BaseStructure
             ':update' => 'UPDATE :table.name :table.alias SET :sets',
             ':delete' => 'DELETE FROM :table.name :table.alias',
             ':raw' => ':raw',
+            ':createtable' => "CREATE TABLE :table.name ( :columns )",
+            ':database' => "CREATE DATABASE :database.name",
         ],
         "micro" => [
             ':where' => ' WHERE :where',
@@ -45,7 +47,6 @@ class BaseStructure
         if ($structure !== false) {
             return $structure;
         }
-
         throw new \Exception(sprintf('unable to find query structure in:', $this->macro::class));
     }
 
@@ -135,6 +136,7 @@ class BaseStructure
             ":values" => ", ",
             ":value" => ", ",
             ":group" => ", ",
+            ":columns" => ",\n",
             default => " "
         };
     }
