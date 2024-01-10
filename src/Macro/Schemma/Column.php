@@ -44,7 +44,10 @@ class Column
 
     public function default(mixed $value): self
     {
-        $this->options[":default"] = $value;
+        $this->options[":default"][] = [
+            "statement" => "DEFAULT :value",
+            ":value" => $value
+        ];
         return $this;
     }
 
