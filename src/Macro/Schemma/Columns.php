@@ -9,7 +9,9 @@ use QueryBuilder\Macro\Schemma\Column;
 class Columns
 {
     private array $columns = [];
-    private ?Constraint $constraint = null;
+
+    /** @var array<Constraint>  */
+    private array $constraint = [];
 
     public function &add(string $name): Column
     {
@@ -19,8 +21,8 @@ class Columns
 
     public function &constraint(string $name): Constraint
     {
-        $this->constraint = new Constraint($name);
-        return $this->constraint;
+        $this->constraint[$id = uniqid()] = new Constraint($name);
+        return  $this->constraint[$id];
     }
 
     public function getColumns(): array
@@ -30,7 +32,7 @@ class Columns
 
     public function getConstraints(): array
     {
-        return $this->constraint?->toArray() ?? [];
+        return array_map(fn($constraint) => $constraint?->toArray(), $this->constraint);
     }
 
 }

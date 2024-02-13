@@ -26,7 +26,7 @@ class CreateTable extends Statement implements Macro
             "statement" => "\n:columns :separetor \n:constraints",
             ":separetor" => empty($constraints) ? null : ", ",
             ":columns" => $columns,
-            ":constraints" => [$constraints]
+            ":constraints" => $constraints
         ]);
 
         return $this;

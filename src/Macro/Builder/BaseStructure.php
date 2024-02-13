@@ -137,6 +137,7 @@ class BaseStructure
             ":value" => ", ",
             ":group" => ", ",
             ":columns" => ",\n",
+            ":constraints" => ",\n",
             default => " "
         };
     }
