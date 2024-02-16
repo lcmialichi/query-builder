@@ -10,19 +10,6 @@ $query = new QueryBuilder(
         "127.0.0.1",
         "root",
         123,
-        "robot"
+        "framework_project"
     )
 );
-
-
-// dd($query->create()->table("users")->columns(function ($column) {
-//      $column->add("id")->int(10)->primaryKey()->autoIncrement();
-//      $column->add("name")->varchar(45)->notNull()->default("NULL");
-//      $column->constraint("aaaaaa")->fk("bbbbb")->references("cccc", "dddd");
-//      return $column;
-// })->toSql());
-
-
-$query->insert([
-    "teste" => ":teste",
-])

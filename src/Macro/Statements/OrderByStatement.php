@@ -6,8 +6,8 @@ trait OrderByStatement
 {
     public function orderBy(string $column, string $type = "ASC"): self
     {
-        $this->setStatementOptions(":order", [
-            "statement" => ":column :type",
+        $this->addStatementOption(":order", [
+            "statement" => "ORDER BY :column :type",
             ":column" => $column,
             ":type" => $type
         ]);
