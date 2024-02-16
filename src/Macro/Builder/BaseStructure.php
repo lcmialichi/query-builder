@@ -17,6 +17,7 @@ class BaseStructure
             ':raw' => ':raw',
             ':createtable' => "CREATE TABLE :table.name ( :columns )",
             ':database' => "CREATE DATABASE :database.name",
+            ':drop' => "DROP TABLE :ifExists :drop",
         ],
         "micro" => [
             ':where' => ' WHERE :where',
