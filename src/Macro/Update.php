@@ -16,7 +16,7 @@ class Update extends Statement implements Macro
 
     public function __construct(QueryBuilder $queryBuilder, string $table)
     {
-        $this->setStatementOption(":table.name", $table);
         parent::__construct($queryBuilder);
+        $this->setStatementOption(":table.name", $table);
     }
 }
